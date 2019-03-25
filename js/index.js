@@ -1,4 +1,2541 @@
-/*!
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+/**
+ * Created by Tivie on 13-07-2015.
+ */
+
+function getDefaultOpts(simple) {
+  'use strict';
+
+  var defaultOptions = {
+    omitExtraWLInCodeBlocks: {
+      defaultValue: false,
+      describe: 'Omit the default extra whiteline added to code blocks',
+      type: 'boolean'
+    },
+    noHeaderId: {
+      defaultValue: false,
+      describe: 'Turn on/off generated header id',
+      type: 'boolean'
+    },
+    prefixHeaderId: {
+      defaultValue: false,
+      describe: 'Specify a prefix to generated header ids',
+      type: 'string'
+    },
+    headerLevelStart: {
+      defaultValue: false,
+      describe: 'The header blocks level start',
+      type: 'integer'
+    },
+    parseImgDimensions: {
+      defaultValue: false,
+      describe: 'Turn on/off image dimension parsing',
+      type: 'boolean'
+    },
+    simplifiedAutoLink: {
+      defaultValue: false,
+      describe: 'Turn on/off GFM autolink style',
+      type: 'boolean'
+    },
+    excludeTrailingPunctuationFromURLs: {
+      defaultValue: false,
+      describe: 'Excludes trailing punctuation from links generated with autoLinking',
+      type: 'boolean'
+    },
+    literalMidWordUnderscores: {
+      defaultValue: false,
+      describe: 'Parse midword underscores as literal underscores',
+      type: 'boolean'
+    },
+    strikethrough: {
+      defaultValue: false,
+      describe: 'Turn on/off strikethrough support',
+      type: 'boolean'
+    },
+    tables: {
+      defaultValue: false,
+      describe: 'Turn on/off tables support',
+      type: 'boolean'
+    },
+    tablesHeaderId: {
+      defaultValue: false,
+      describe: 'Add an id to table headers',
+      type: 'boolean'
+    },
+    ghCodeBlocks: {
+      defaultValue: true,
+      describe: 'Turn on/off GFM fenced code blocks support',
+      type: 'boolean'
+    },
+    tasklists: {
+      defaultValue: false,
+      describe: 'Turn on/off GFM tasklist support',
+      type: 'boolean'
+    },
+    smoothLivePreview: {
+      defaultValue: false,
+      describe: 'Prevents weird effects in live previews due to incomplete input',
+      type: 'boolean'
+    },
+    smartIndentationFix: {
+      defaultValue: false,
+      description: 'Tries to smartly fix indentation in es6 strings',
+      type: 'boolean'
+    },
+    disableForced4SpacesIndentedSublists: {
+      defaultValue: false,
+      description: 'Disables the requirement of indenting nested sublists by 4 spaces',
+      type: 'boolean'
+    },
+    simpleLineBreaks: {
+      defaultValue: false,
+      description: 'Parses simple line breaks as <br> (GFM Style)',
+      type: 'boolean'
+    }
+  };
+  if (simple === false) {
+    return JSON.parse(JSON.stringify(defaultOptions));
+  }
+  var ret = {};
+  for (var opt in defaultOptions) {
+    if (defaultOptions.hasOwnProperty(opt)) {
+      ret[opt] = defaultOptions[opt].defaultValue;
+    }
+  }
+  return ret;
+}
+
+/**
+ * Created by Tivie on 06-01-2015.
+ */
+
+// Private properties
+var showdown = {},
+    parsers = {},
+    extensions = {},
+    globalOptions = getDefaultOpts(true),
+    flavor = {
+      github: {
+        omitExtraWLInCodeBlocks:              true,
+        prefixHeaderId:                       'user-content-',
+        simplifiedAutoLink:                   true,
+        excludeTrailingPunctuationFromURLs:   true,
+        literalMidWordUnderscores:            true,
+        strikethrough:                        true,
+        tables:                               true,
+        tablesHeaderId:                       true,
+        ghCodeBlocks:                         true,
+        tasklists:                            true,
+        disableForced4SpacesIndentedSublists: true,
+        simpleLineBreaks:                     true
+      },
+      vanilla: getDefaultOpts(true)
+    };
+
+/**
+ * helper namespace
+ * @type {{}}
+ */
+showdown.helper = {};
+
+/**
+ * TODO LEGACY SUPPORT CODE
+ * @type {{}}
+ */
+showdown.extensions = {};
+
+/**
+ * Set a global option
+ * @static
+ * @param {string} key
+ * @param {*} value
+ * @returns {showdown}
+ */
+showdown.setOption = function (key, value) {
+  'use strict';
+  globalOptions[key] = value;
+  return this;
+};
+
+/**
+ * Get a global option
+ * @static
+ * @param {string} key
+ * @returns {*}
+ */
+showdown.getOption = function (key) {
+  'use strict';
+  return globalOptions[key];
+};
+
+/**
+ * Get the global options
+ * @static
+ * @returns {{}}
+ */
+showdown.getOptions = function () {
+  'use strict';
+  return globalOptions;
+};
+
+/**
+ * Reset global options to the default values
+ * @static
+ */
+showdown.resetOptions = function () {
+  'use strict';
+  globalOptions = getDefaultOpts(true);
+};
+
+/**
+ * Set the flavor showdown should use as default
+ * @param {string} name
+ */
+showdown.setFlavor = function (name) {
+  'use strict';
+  if (flavor.hasOwnProperty(name)) {
+    var preset = flavor[name];
+    for (var option in preset) {
+      if (preset.hasOwnProperty(option)) {
+        globalOptions[option] = preset[option];
+      }
+    }
+  }
+};
+
+/**
+ * Get the default options
+ * @static
+ * @param {boolean} [simple=true]
+ * @returns {{}}
+ */
+showdown.getDefaultOptions = function (simple) {
+  'use strict';
+  return getDefaultOpts(simple);
+};
+
+/**
+ * Get or set a subParser
+ *
+ * subParser(name)       - Get a registered subParser
+ * subParser(name, func) - Register a subParser
+ * @static
+ * @param {string} name
+ * @param {function} [func]
+ * @returns {*}
+ */
+showdown.subParser = function (name, func) {
+  'use strict';
+  if (showdown.helper.isString(name)) {
+    if (typeof func !== 'undefined') {
+      parsers[name] = func;
+    } else {
+      if (parsers.hasOwnProperty(name)) {
+        return parsers[name];
+      } else {
+        throw Error('SubParser named ' + name + ' not registered!');
+      }
+    }
+  }
+};
+
+/**
+ * Gets or registers an extension
+ * @static
+ * @param {string} name
+ * @param {object|function=} ext
+ * @returns {*}
+ */
+showdown.extension = function (name, ext) {
+  'use strict';
+
+  if (!showdown.helper.isString(name)) {
+    throw Error('Extension \'name\' must be a string');
+  }
+
+  name = showdown.helper.stdExtName(name);
+
+  // Getter
+  if (showdown.helper.isUndefined(ext)) {
+    if (!extensions.hasOwnProperty(name)) {
+      throw Error('Extension named ' + name + ' is not registered!');
+    }
+    return extensions[name];
+
+    // Setter
+  } else {
+    // Expand extension if it's wrapped in a function
+    if (typeof ext === 'function') {
+      ext = ext();
+    }
+
+    // Ensure extension is an array
+    if (!showdown.helper.isArray(ext)) {
+      ext = [ext];
+    }
+
+    var validExtension = validate(ext, name);
+
+    if (validExtension.valid) {
+      extensions[name] = ext;
+    } else {
+      throw Error(validExtension.error);
+    }
+  }
+};
+
+/**
+ * Gets all extensions registered
+ * @returns {{}}
+ */
+showdown.getAllExtensions = function () {
+  'use strict';
+  return extensions;
+};
+
+/**
+ * Remove an extension
+ * @param {string} name
+ */
+showdown.removeExtension = function (name) {
+  'use strict';
+  delete extensions[name];
+};
+
+/**
+ * Removes all extensions
+ */
+showdown.resetExtensions = function () {
+  'use strict';
+  extensions = {};
+};
+
+/**
+ * Validate extension
+ * @param {array} extension
+ * @param {string} name
+ * @returns {{valid: boolean, error: string}}
+ */
+function validate(extension, name) {
+  'use strict';
+
+  var errMsg = (name) ? 'Error in ' + name + ' extension->' : 'Error in unnamed extension',
+    ret = {
+      valid: true,
+      error: ''
+    };
+
+  if (!showdown.helper.isArray(extension)) {
+    extension = [extension];
+  }
+
+  for (var i = 0; i < extension.length; ++i) {
+    var baseMsg = errMsg + ' sub-extension ' + i + ': ',
+        ext = extension[i];
+    if (typeof ext !== 'object') {
+      ret.valid = false;
+      ret.error = baseMsg + 'must be an object, but ' + typeof ext + ' given';
+      return ret;
+    }
+
+    if (!showdown.helper.isString(ext.type)) {
+      ret.valid = false;
+      ret.error = baseMsg + 'property "type" must be a string, but ' + typeof ext.type + ' given';
+      return ret;
+    }
+
+    var type = ext.type = ext.type.toLowerCase();
+
+    // normalize extension type
+    if (type === 'language') {
+      type = ext.type = 'lang';
+    }
+
+    if (type === 'html') {
+      type = ext.type = 'output';
+    }
+
+    if (type !== 'lang' && type !== 'output' && type !== 'listener') {
+      ret.valid = false;
+      ret.error = baseMsg + 'type ' + type + ' is not recognized. Valid values: "lang/language", "output/html" or "listener"';
+      return ret;
+    }
+
+    if (type === 'listener') {
+      if (showdown.helper.isUndefined(ext.listeners)) {
+        ret.valid = false;
+        ret.error = baseMsg + '. Extensions of type "listener" must have a property called "listeners"';
+        return ret;
+      }
+    } else {
+      if (showdown.helper.isUndefined(ext.filter) && showdown.helper.isUndefined(ext.regex)) {
+        ret.valid = false;
+        ret.error = baseMsg + type + ' extensions must define either a "regex" property or a "filter" method';
+        return ret;
+      }
+    }
+
+    if (ext.listeners) {
+      if (typeof ext.listeners !== 'object') {
+        ret.valid = false;
+        ret.error = baseMsg + '"listeners" property must be an object but ' + typeof ext.listeners + ' given';
+        return ret;
+      }
+      for (var ln in ext.listeners) {
+        if (ext.listeners.hasOwnProperty(ln)) {
+          if (typeof ext.listeners[ln] !== 'function') {
+            ret.valid = false;
+            ret.error = baseMsg + '"listeners" property must be an hash of [event name]: [callback]. listeners.' + ln +
+              ' must be a function but ' + typeof ext.listeners[ln] + ' given';
+            return ret;
+          }
+        }
+      }
+    }
+
+    if (ext.filter) {
+      if (typeof ext.filter !== 'function') {
+        ret.valid = false;
+        ret.error = baseMsg + '"filter" must be a function, but ' + typeof ext.filter + ' given';
+        return ret;
+      }
+    } else if (ext.regex) {
+      if (showdown.helper.isString(ext.regex)) {
+        ext.regex = new RegExp(ext.regex, 'g');
+      }
+      if (!ext.regex instanceof RegExp) {
+        ret.valid = false;
+        ret.error = baseMsg + '"regex" property must either be a string or a RegExp object, but ' + typeof ext.regex + ' given';
+        return ret;
+      }
+      if (showdown.helper.isUndefined(ext.replace)) {
+        ret.valid = false;
+        ret.error = baseMsg + '"regex" extensions must implement a replace string or function';
+        return ret;
+      }
+    }
+  }
+  return ret;
+}
+
+/**
+ * Validate extension
+ * @param {object} ext
+ * @returns {boolean}
+ */
+showdown.validateExtension = function (ext) {
+  'use strict';
+
+  var validateExtension = validate(ext, null);
+  if (!validateExtension.valid) {
+    console.warn(validateExtension.error);
+    return false;
+  }
+  return true;
+};
+
+/**
+ * showdownjs helper functions
+ */
+
+if (!showdown.hasOwnProperty('helper')) {
+  showdown.helper = {};
+}
+
+/**
+ * Check if var is string
+ * @static
+ * @param {string} a
+ * @returns {boolean}
+ */
+showdown.helper.isString = function isString(a) {
+  'use strict';
+  return (typeof a === 'string' || a instanceof String);
+};
+
+/**
+ * Check if var is a function
+ * @static
+ * @param {string} a
+ * @returns {boolean}
+ */
+showdown.helper.isFunction = function isFunction(a) {
+  'use strict';
+  var getType = {};
+  return a && getType.toString.call(a) === '[object Function]';
+};
+
+/**
+ * ForEach helper function
+ * @static
+ * @param {*} obj
+ * @param {function} callback
+ */
+showdown.helper.forEach = function forEach(obj, callback) {
+  'use strict';
+  if (typeof obj.forEach === 'function') {
+    obj.forEach(callback);
+  } else {
+    for (var i = 0; i < obj.length; i++) {
+      callback(obj[i], i, obj);
+    }
+  }
+};
+
+/**
+ * isArray helper function
+ * @static
+ * @param {*} a
+ * @returns {boolean}
+ */
+showdown.helper.isArray = function isArray(a) {
+  'use strict';
+  return a.constructor === Array;
+};
+
+/**
+ * Check if value is undefined
+ * @static
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
+ */
+showdown.helper.isUndefined = function isUndefined(value) {
+  'use strict';
+  return typeof value === 'undefined';
+};
+
+/**
+ * Standardidize extension name
+ * @static
+ * @param {string} s extension name
+ * @returns {string}
+ */
+showdown.helper.stdExtName = function (s) {
+  'use strict';
+  return s.replace(/[_-]||\s/g, '').toLowerCase();
+};
+
+function escapeCharactersCallback(wholeMatch, m1) {
+  'use strict';
+  var charCodeToEscape = m1.charCodeAt(0);
+  return '~E' + charCodeToEscape + 'E';
+}
+
+/**
+ * Callback used to escape characters when passing through String.replace
+ * @static
+ * @param {string} wholeMatch
+ * @param {string} m1
+ * @returns {string}
+ */
+showdown.helper.escapeCharactersCallback = escapeCharactersCallback;
+
+/**
+ * Escape characters in a string
+ * @static
+ * @param {string} text
+ * @param {string} charsToEscape
+ * @param {boolean} afterBackslash
+ * @returns {XML|string|void|*}
+ */
+showdown.helper.escapeCharacters = function escapeCharacters(text, charsToEscape, afterBackslash) {
+  'use strict';
+  // First we have to escape the escape characters so that
+  // we can build a character class out of them
+  var regexString = '([' + charsToEscape.replace(/([\[\]\\])/g, '\\$1') + '])';
+
+  if (afterBackslash) {
+    regexString = '\\\\' + regexString;
+  }
+
+  var regex = new RegExp(regexString, 'g');
+  text = text.replace(regex, escapeCharactersCallback);
+
+  return text;
+};
+
+var rgxFindMatchPos = function (str, left, right, flags) {
+  'use strict';
+  var f = flags || '',
+    g = f.indexOf('g') > -1,
+    x = new RegExp(left + '|' + right, 'g' + f.replace(/g/g, '')),
+    l = new RegExp(left, f.replace(/g/g, '')),
+    pos = [],
+    t, s, m, start, end;
+
+  do {
+    t = 0;
+    while ((m = x.exec(str))) {
+      if (l.test(m[0])) {
+        if (!(t++)) {
+          s = x.lastIndex;
+          start = s - m[0].length;
+        }
+      } else if (t) {
+        if (!--t) {
+          end = m.index + m[0].length;
+          var obj = {
+            left: {start: start, end: s},
+            match: {start: s, end: m.index},
+            right: {start: m.index, end: end},
+            wholeMatch: {start: start, end: end}
+          };
+          pos.push(obj);
+          if (!g) {
+            return pos;
+          }
+        }
+      }
+    }
+  } while (t && (x.lastIndex = s));
+
+  return pos;
+};
+
+/**
+ * matchRecursiveRegExp
+ *
+ * (c) 2007 Steven Levithan <stevenlevithan.com>
+ * MIT License
+ *
+ * Accepts a string to search, a left and right format delimiter
+ * as regex patterns, and optional regex flags. Returns an array
+ * of matches, allowing nested instances of left/right delimiters.
+ * Use the "g" flag to return all matches, otherwise only the
+ * first is returned. Be careful to ensure that the left and
+ * right format delimiters produce mutually exclusive matches.
+ * Backreferences are not supported within the right delimiter
+ * due to how it is internally combined with the left delimiter.
+ * When matching strings whose format delimiters are unbalanced
+ * to the left or right, the output is intentionally as a
+ * conventional regex library with recursion support would
+ * produce, e.g. "<<x>" and "<x>>" both produce ["x"] when using
+ * "<" and ">" as the delimiters (both strings contain a single,
+ * balanced instance of "<x>").
+ *
+ * examples:
+ * matchRecursiveRegExp("test", "\\(", "\\)")
+ * returns: []
+ * matchRecursiveRegExp("<t<<e>><s>>t<>", "<", ">", "g")
+ * returns: ["t<<e>><s>", ""]
+ * matchRecursiveRegExp("<div id=\"x\">test</div>", "<div\\b[^>]*>", "</div>", "gi")
+ * returns: ["test"]
+ */
+showdown.helper.matchRecursiveRegExp = function (str, left, right, flags) {
+  'use strict';
+
+  var matchPos = rgxFindMatchPos (str, left, right, flags),
+    results = [];
+
+  for (var i = 0; i < matchPos.length; ++i) {
+    results.push([
+      str.slice(matchPos[i].wholeMatch.start, matchPos[i].wholeMatch.end),
+      str.slice(matchPos[i].match.start, matchPos[i].match.end),
+      str.slice(matchPos[i].left.start, matchPos[i].left.end),
+      str.slice(matchPos[i].right.start, matchPos[i].right.end)
+    ]);
+  }
+  return results;
+};
+
+/**
+ *
+ * @param {string} str
+ * @param {string|function} replacement
+ * @param {string} left
+ * @param {string} right
+ * @param {string} flags
+ * @returns {string}
+ */
+showdown.helper.replaceRecursiveRegExp = function (str, replacement, left, right, flags) {
+  'use strict';
+
+  if (!showdown.helper.isFunction(replacement)) {
+    var repStr = replacement;
+    replacement = function () {
+      return repStr;
+    };
+  }
+
+  var matchPos = rgxFindMatchPos(str, left, right, flags),
+      finalStr = str,
+      lng = matchPos.length;
+
+  if (lng > 0) {
+    var bits = [];
+    if (matchPos[0].wholeMatch.start !== 0) {
+      bits.push(str.slice(0, matchPos[0].wholeMatch.start));
+    }
+    for (var i = 0; i < lng; ++i) {
+      bits.push(
+        replacement(
+          str.slice(matchPos[i].wholeMatch.start, matchPos[i].wholeMatch.end),
+          str.slice(matchPos[i].match.start, matchPos[i].match.end),
+          str.slice(matchPos[i].left.start, matchPos[i].left.end),
+          str.slice(matchPos[i].right.start, matchPos[i].right.end)
+        )
+      );
+      if (i < lng - 1) {
+        bits.push(str.slice(matchPos[i].wholeMatch.end, matchPos[i + 1].wholeMatch.start));
+      }
+    }
+    if (matchPos[lng - 1].wholeMatch.end < str.length) {
+      bits.push(str.slice(matchPos[lng - 1].wholeMatch.end));
+    }
+    finalStr = bits.join('');
+  }
+  return finalStr;
+};
+
+/**
+ * POLYFILLS
+ */
+if (showdown.helper.isUndefined(console)) {
+  console = {
+    warn: function (msg) {
+      'use strict';
+      alert(msg);
+    },
+    log: function (msg) {
+      'use strict';
+      alert(msg);
+    },
+    error: function (msg) {
+      'use strict';
+      throw msg;
+    }
+  };
+}
+
+/**
+ * Created by Estevao on 31-05-2015.
+ */
+
+/**
+ * Showdown Converter class
+ * @class
+ * @param {object} [converterOptions]
+ * @returns {Converter}
+ */
+showdown.Converter = function (converterOptions) {
+  'use strict';
+
+  var
+      /**
+       * Options used by this converter
+       * @private
+       * @type {{}}
+       */
+      options = {},
+
+      /**
+       * Language extensions used by this converter
+       * @private
+       * @type {Array}
+       */
+      langExtensions = [],
+
+      /**
+       * Output modifiers extensions used by this converter
+       * @private
+       * @type {Array}
+       */
+      outputModifiers = [],
+
+      /**
+       * Event listeners
+       * @private
+       * @type {{}}
+       */
+      listeners = {};
+
+  _constructor();
+
+  /**
+   * Converter constructor
+   * @private
+   */
+  function _constructor() {
+    converterOptions = converterOptions || {};
+
+    for (var gOpt in globalOptions) {
+      if (globalOptions.hasOwnProperty(gOpt)) {
+        options[gOpt] = globalOptions[gOpt];
+      }
+    }
+
+    // Merge options
+    if (typeof converterOptions === 'object') {
+      for (var opt in converterOptions) {
+        if (converterOptions.hasOwnProperty(opt)) {
+          options[opt] = converterOptions[opt];
+        }
+      }
+    } else {
+      throw Error('Converter expects the passed parameter to be an object, but ' + typeof converterOptions +
+      ' was passed instead.');
+    }
+
+    if (options.extensions) {
+      showdown.helper.forEach(options.extensions, _parseExtension);
+    }
+  }
+
+  /**
+   * Parse extension
+   * @param {*} ext
+   * @param {string} [name='']
+   * @private
+   */
+  function _parseExtension(ext, name) {
+
+    name = name || null;
+    // If it's a string, the extension was previously loaded
+    if (showdown.helper.isString(ext)) {
+      ext = showdown.helper.stdExtName(ext);
+      name = ext;
+
+      // LEGACY_SUPPORT CODE
+      if (showdown.extensions[ext]) {
+        console.warn('DEPRECATION WARNING: ' + ext + ' is an old extension that uses a deprecated loading method.' +
+          'Please inform the developer that the extension should be updated!');
+        legacyExtensionLoading(showdown.extensions[ext], ext);
+        return;
+      // END LEGACY SUPPORT CODE
+
+      } else if (!showdown.helper.isUndefined(extensions[ext])) {
+        ext = extensions[ext];
+
+      } else {
+        throw Error('Extension "' + ext + '" could not be loaded. It was either not found or is not a valid extension.');
+      }
+    }
+
+    if (typeof ext === 'function') {
+      ext = ext();
+    }
+
+    if (!showdown.helper.isArray(ext)) {
+      ext = [ext];
+    }
+
+    var validExt = validate(ext, name);
+    if (!validExt.valid) {
+      throw Error(validExt.error);
+    }
+
+    for (var i = 0; i < ext.length; ++i) {
+      switch (ext[i].type) {
+
+        case 'lang':
+          langExtensions.push(ext[i]);
+          break;
+
+        case 'output':
+          outputModifiers.push(ext[i]);
+          break;
+      }
+      if (ext[i].hasOwnProperty(listeners)) {
+        for (var ln in ext[i].listeners) {
+          if (ext[i].listeners.hasOwnProperty(ln)) {
+            listen(ln, ext[i].listeners[ln]);
+          }
+        }
+      }
+    }
+
+  }
+
+  /**
+   * LEGACY_SUPPORT
+   * @param {*} ext
+   * @param {string} name
+   */
+  function legacyExtensionLoading(ext, name) {
+    if (typeof ext === 'function') {
+      ext = ext(new showdown.Converter());
+    }
+    if (!showdown.helper.isArray(ext)) {
+      ext = [ext];
+    }
+    var valid = validate(ext, name);
+
+    if (!valid.valid) {
+      throw Error(valid.error);
+    }
+
+    for (var i = 0; i < ext.length; ++i) {
+      switch (ext[i].type) {
+        case 'lang':
+          langExtensions.push(ext[i]);
+          break;
+        case 'output':
+          outputModifiers.push(ext[i]);
+          break;
+        default:// should never reach here
+          throw Error('Extension loader error: Type unrecognized!!!');
+      }
+    }
+  }
+
+  /**
+   * Listen to an event
+   * @param {string} name
+   * @param {function} callback
+   */
+  function listen(name, callback) {
+    if (!showdown.helper.isString(name)) {
+      throw Error('Invalid argument in converter.listen() method: name must be a string, but ' + typeof name + ' given');
+    }
+
+    if (typeof callback !== 'function') {
+      throw Error('Invalid argument in converter.listen() method: callback must be a function, but ' + typeof callback + ' given');
+    }
+
+    if (!listeners.hasOwnProperty(name)) {
+      listeners[name] = [];
+    }
+    listeners[name].push(callback);
+  }
+
+  function rTrimInputText(text) {
+    var rsp = text.match(/^\s*/)[0].length,
+        rgx = new RegExp('^\\s{0,' + rsp + '}', 'gm');
+    return text.replace(rgx, '');
+  }
+
+  /**
+   * Dispatch an event
+   * @private
+   * @param {string} evtName Event name
+   * @param {string} text Text
+   * @param {{}} options Converter Options
+   * @param {{}} globals
+   * @returns {string}
+   */
+  this._dispatch = function dispatch (evtName, text, options, globals) {
+    if (listeners.hasOwnProperty(evtName)) {
+      for (var ei = 0; ei < listeners[evtName].length; ++ei) {
+        var nText = listeners[evtName][ei](evtName, text, this, options, globals);
+        if (nText && typeof nText !== 'undefined') {
+          text = nText;
+        }
+      }
+    }
+    return text;
+  };
+
+  /**
+   * Listen to an event
+   * @param {string} name
+   * @param {function} callback
+   * @returns {showdown.Converter}
+   */
+  this.listen = function (name, callback) {
+    listen(name, callback);
+    return this;
+  };
+
+  /**
+   * Converts a markdown string into HTML
+   * @param {string} text
+   * @returns {*}
+   */
+  this.makeHtml = function (text) {
+    //check if text is not falsy
+    if (!text) {
+      return text;
+    }
+
+    var globals = {
+      gHtmlBlocks:     [],
+      gHtmlMdBlocks:   [],
+      gHtmlSpans:      [],
+      gUrls:           {},
+      gTitles:         {},
+      gDimensions:     {},
+      gListLevel:      0,
+      hashLinkCounts:  {},
+      langExtensions:  langExtensions,
+      outputModifiers: outputModifiers,
+      converter:       this,
+      ghCodeBlocks:    []
+    };
+
+    // attacklab: Replace ~ with ~T
+    // This lets us use tilde as an escape char to avoid md5 hashes
+    // The choice of character is arbitrary; anything that isn't
+    // magic in Markdown will work.
+    text = text.replace(/~/g, '~T');
+
+    // attacklab: Replace $ with ~D
+    // RegExp interprets $ as a special character
+    // when it's in a replacement string
+    text = text.replace(/\$/g, '~D');
+
+    // Standardize line endings
+    text = text.replace(/\r\n/g, '\n'); // DOS to Unix
+    text = text.replace(/\r/g, '\n'); // Mac to Unix
+
+    if (options.smartIndentationFix) {
+      text = rTrimInputText(text);
+    }
+
+    // Make sure text begins and ends with a couple of newlines:
+    text = '\n\n' + text + '\n\n';
+
+    // detab
+    text = showdown.subParser('detab')(text, options, globals);
+
+    // stripBlankLines
+    text = showdown.subParser('stripBlankLines')(text, options, globals);
+
+    //run languageExtensions
+    showdown.helper.forEach(langExtensions, function (ext) {
+      text = showdown.subParser('runExtension')(ext, text, options, globals);
+    });
+
+    // run the sub parsers
+    text = showdown.subParser('hashPreCodeTags')(text, options, globals);
+    text = showdown.subParser('githubCodeBlocks')(text, options, globals);
+    text = showdown.subParser('hashHTMLBlocks')(text, options, globals);
+    text = showdown.subParser('hashHTMLSpans')(text, options, globals);
+    text = showdown.subParser('stripLinkDefinitions')(text, options, globals);
+    text = showdown.subParser('blockGamut')(text, options, globals);
+    text = showdown.subParser('unhashHTMLSpans')(text, options, globals);
+    text = showdown.subParser('unescapeSpecialChars')(text, options, globals);
+
+    // attacklab: Restore dollar signs
+    text = text.replace(/~D/g, '$$');
+
+    // attacklab: Restore tildes
+    text = text.replace(/~T/g, '~');
+
+    // Run output modifiers
+    showdown.helper.forEach(outputModifiers, function (ext) {
+      text = showdown.subParser('runExtension')(ext, text, options, globals);
+    });
+
+    return text;
+  };
+
+  /**
+   * Set an option of this Converter instance
+   * @param {string} key
+   * @param {*} value
+   */
+  this.setOption = function (key, value) {
+    options[key] = value;
+  };
+
+  /**
+   * Get the option of this Converter instance
+   * @param {string} key
+   * @returns {*}
+   */
+  this.getOption = function (key) {
+    return options[key];
+  };
+
+  /**
+   * Get the options of this Converter instance
+   * @returns {{}}
+   */
+  this.getOptions = function () {
+    return options;
+  };
+
+  /**
+   * Add extension to THIS converter
+   * @param {{}} extension
+   * @param {string} [name=null]
+   */
+  this.addExtension = function (extension, name) {
+    name = name || null;
+    _parseExtension(extension, name);
+  };
+
+  /**
+   * Use a global registered extension with THIS converter
+   * @param {string} extensionName Name of the previously registered extension
+   */
+  this.useExtension = function (extensionName) {
+    _parseExtension(extensionName);
+  };
+
+  /**
+   * Set the flavor THIS converter should use
+   * @param {string} name
+   */
+  this.setFlavor = function (name) {
+    if (flavor.hasOwnProperty(name)) {
+      var preset = flavor[name];
+      for (var option in preset) {
+        if (preset.hasOwnProperty(option)) {
+          options[option] = preset[option];
+        }
+      }
+    }
+  };
+
+  /**
+   * Remove an extension from THIS converter.
+   * Note: This is a costly operation. It's better to initialize a new converter
+   * and specify the extensions you wish to use
+   * @param {Array} extension
+   */
+  this.removeExtension = function (extension) {
+    if (!showdown.helper.isArray(extension)) {
+      extension = [extension];
+    }
+    for (var a = 0; a < extension.length; ++a) {
+      var ext = extension[a];
+      for (var i = 0; i < langExtensions.length; ++i) {
+        if (langExtensions[i] === ext) {
+          langExtensions[i].splice(i, 1);
+        }
+      }
+      for (var ii = 0; ii < outputModifiers.length; ++i) {
+        if (outputModifiers[ii] === ext) {
+          outputModifiers[ii].splice(i, 1);
+        }
+      }
+    }
+  };
+
+  /**
+   * Get all extension of THIS converter
+   * @returns {{language: Array, output: Array}}
+   */
+  this.getAllExtensions = function () {
+    return {
+      language: langExtensions,
+      output: outputModifiers
+    };
+  };
+};
+
+/**
+ * Turn Markdown link shortcuts into XHTML <a> tags.
+ */
+showdown.subParser('anchors', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('anchors.before', text, options, globals);
+
+  var writeAnchorTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+    if (showdown.helper.isUndefined(m7)) {
+      m7 = '';
+    }
+    wholeMatch = m1;
+    var linkText = m2,
+        linkId = m3.toLowerCase(),
+        url = m4,
+        title = m7;
+
+    if (!url) {
+      if (!linkId) {
+        // lower-case and turn embedded newlines into spaces
+        linkId = linkText.toLowerCase().replace(/ ?\n/g, ' ');
+      }
+      url = '#' + linkId;
+
+      if (!showdown.helper.isUndefined(globals.gUrls[linkId])) {
+        url = globals.gUrls[linkId];
+        if (!showdown.helper.isUndefined(globals.gTitles[linkId])) {
+          title = globals.gTitles[linkId];
+        }
+      } else {
+        if (wholeMatch.search(/\(\s*\)$/m) > -1) {
+          // Special case for explicit empty url
+          url = '';
+        } else {
+          return wholeMatch;
+        }
+      }
+    }
+
+    url = showdown.helper.escapeCharacters(url, '*_', false);
+    var result = '<a href="' + url + '"';
+
+    if (title !== '' && title !== null) {
+      title = title.replace(/"/g, '&quot;');
+      title = showdown.helper.escapeCharacters(title, '*_', false);
+      result += ' title="' + title + '"';
+    }
+
+    result += '>' + linkText + '</a>';
+
+    return result;
+  };
+
+  // First, handle reference-style links: [link text] [id]
+  text = text.replace(/(\[((?:\[[^\]]*]|[^\[\]])*)][ ]?(?:\n[ ]*)?\[(.*?)])()()()()/g, writeAnchorTag);
+
+  // Next, inline-style links: [link text](url "optional title")
+  text = text.replace(/(\[((?:\[[^\]]*]|[^\[\]])*)]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,
+                      writeAnchorTag);
+
+  // Last, handle reference-style shortcuts: [link text]
+  // These must come last in case you've also got [link test][1]
+  // or [link test](/foo)
+  text = text.replace(/(\[([^\[\]]+)])()()()()()/g, writeAnchorTag);
+
+  text = globals.converter._dispatch('anchors.after', text, options, globals);
+  return text;
+});
+
+showdown.subParser('autoLinks', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('autoLinks.before', text, options, globals);
+
+  var simpleURLRegex  = /\b(((https?|ftp|dict):\/\/|www\.)[^'">\s]+\.[^'">\s]+)()(?=\s|$)(?!["<>])/gi,
+      simpleURLRegex2 = /\b(((https?|ftp|dict):\/\/|www\.)[^'">\s]+\.[^'">\s]+?)([.!?()]?)(?=\s|$)(?!["<>])/gi,
+      delimUrlRegex   = /<(((https?|ftp|dict):\/\/|www\.)[^'">\s]+)>/gi,
+      simpleMailRegex = /(?:^|\s)([A-Za-z0-9!#$%&'*+-/=?^_`{|}~.]+@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)(?:$|\s)/gi,
+      delimMailRegex  = /<(?:mailto:)?([-.\w]+@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi;
+
+  text = text.replace(delimUrlRegex, replaceLink);
+  text = text.replace(delimMailRegex, replaceMail);
+  // simpleURLRegex  = /\b(((https?|ftp|dict):\/\/|www\.)[-.+~:?#@!$&'()*,;=[\]\w]+)\b/gi,
+  // Email addresses: <address@domain.foo>
+
+  if (options.simplifiedAutoLink) {
+    if (options.excludeTrailingPunctuationFromURLs) {
+      text = text.replace(simpleURLRegex2, replaceLink);
+    } else {
+      text = text.replace(simpleURLRegex, replaceLink);
+    }
+    text = text.replace(simpleMailRegex, replaceMail);
+  }
+
+  function replaceLink(wm, link, m2, m3, trailingPunctuation) {
+    var lnkTxt = link,
+        append = '';
+    if (/^www\./i.test(link)) {
+      link = link.replace(/^www\./i, 'http://www.');
+    }
+    if (options.excludeTrailingPunctuationFromURLs && trailingPunctuation) {
+      append = trailingPunctuation;
+    }
+    return '<a href="' + link + '">' + lnkTxt + '</a>' + append;
+  }
+
+  function replaceMail(wholeMatch, mail) {
+    var unescapedStr = showdown.subParser('unescapeSpecialChars')(mail);
+    return showdown.subParser('encodeEmailAddress')(unescapedStr);
+  }
+
+  text = globals.converter._dispatch('autoLinks.after', text, options, globals);
+
+  return text;
+});
+
+/**
+ * These are all the transformations that form block-level
+ * tags like paragraphs, headers, and list items.
+ */
+showdown.subParser('blockGamut', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('blockGamut.before', text, options, globals);
+
+  // we parse blockquotes first so that we can have headings and hrs
+  // inside blockquotes
+  text = showdown.subParser('blockQuotes')(text, options, globals);
+  text = showdown.subParser('headers')(text, options, globals);
+
+  // Do Horizontal Rules:
+  var key = showdown.subParser('hashBlock')('<hr />', options, globals);
+  text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
+  text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
+  text = text.replace(/^[ ]{0,2}([ ]?_[ ]?){3,}[ \t]*$/gm, key);
+
+  text = showdown.subParser('lists')(text, options, globals);
+  text = showdown.subParser('codeBlocks')(text, options, globals);
+  text = showdown.subParser('tables')(text, options, globals);
+
+  // We already ran _HashHTMLBlocks() before, in Markdown(), but that
+  // was to escape raw HTML in the original Markdown source. This time,
+  // we're escaping the markup we've just created, so that we don't wrap
+  // <p> tags around block-level tags.
+  text = showdown.subParser('hashHTMLBlocks')(text, options, globals);
+  text = showdown.subParser('paragraphs')(text, options, globals);
+
+  text = globals.converter._dispatch('blockGamut.after', text, options, globals);
+
+  return text;
+});
+
+showdown.subParser('blockQuotes', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('blockQuotes.before', text, options, globals);
+
+  text = text.replace(/((^ {0,3}>[ \t]?.+\n(.+\n)*\n*)+)/gm, function (wholeMatch, m1) {
+    var bq = m1;
+
+    // attacklab: hack around Konqueror 3.5.4 bug:
+    // "----------bug".replace(/^-/g,"") == "bug"
+    bq = bq.replace(/^[ \t]*>[ \t]?/gm, '~0'); // trim one level of quoting
+
+    // attacklab: clean up hack
+    bq = bq.replace(/~0/g, '');
+
+    bq = bq.replace(/^[ \t]+$/gm, ''); // trim whitespace-only lines
+    bq = showdown.subParser('githubCodeBlocks')(bq, options, globals);
+    bq = showdown.subParser('blockGamut')(bq, options, globals); // recurse
+
+    bq = bq.replace(/(^|\n)/g, '$1  ');
+    // These leading spaces screw with <pre> content, so we need to fix that:
+    bq = bq.replace(/(\s*<pre>[^\r]+?<\/pre>)/gm, function (wholeMatch, m1) {
+      var pre = m1;
+      // attacklab: hack around Konqueror 3.5.4 bug:
+      pre = pre.replace(/^  /mg, '~0');
+      pre = pre.replace(/~0/g, '');
+      return pre;
+    });
+
+    return showdown.subParser('hashBlock')('<blockquote>\n' + bq + '\n</blockquote>', options, globals);
+  });
+
+  text = globals.converter._dispatch('blockQuotes.after', text, options, globals);
+  return text;
+});
+
+/**
+ * Process Markdown `<pre><code>` blocks.
+ */
+showdown.subParser('codeBlocks', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('codeBlocks.before', text, options, globals);
+
+  // sentinel workarounds for lack of \A and \Z, safari\khtml bug
+  text += '~0';
+
+  var pattern = /(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g;
+  text = text.replace(pattern, function (wholeMatch, m1, m2) {
+    var codeblock = m1,
+        nextChar = m2,
+        end = '\n';
+
+    codeblock = showdown.subParser('outdent')(codeblock);
+    codeblock = showdown.subParser('encodeCode')(codeblock);
+    codeblock = showdown.subParser('detab')(codeblock);
+    codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
+    codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing newlines
+
+    if (options.omitExtraWLInCodeBlocks) {
+      end = '';
+    }
+
+    codeblock = '<pre><code>' + codeblock + end + '</code></pre>';
+
+    return showdown.subParser('hashBlock')(codeblock, options, globals) + nextChar;
+  });
+
+  // strip sentinel
+  text = text.replace(/~0/, '');
+
+  text = globals.converter._dispatch('codeBlocks.after', text, options, globals);
+  return text;
+});
+
+/**
+ *
+ *   *  Backtick quotes are used for <code></code> spans.
+ *
+ *   *  You can use multiple backticks as the delimiters if you want to
+ *     include literal backticks in the code span. So, this input:
+ *
+ *         Just type ``foo `bar` baz`` at the prompt.
+ *
+ *       Will translate to:
+ *
+ *         <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
+ *
+ *    There's no arbitrary limit to the number of backticks you
+ *    can use as delimters. If you need three consecutive backticks
+ *    in your code, use four for delimiters, etc.
+ *
+ *  *  You can use spaces to get literal backticks at the edges:
+ *
+ *         ... type `` `bar` `` ...
+ *
+ *       Turns to:
+ *
+ *         ... type <code>`bar`</code> ...
+ */
+showdown.subParser('codeSpans', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('codeSpans.before', text, options, globals);
+
+  /*
+   text = text.replace(/
+   (^|[^\\])					// Character before opening ` can't be a backslash
+   (`+)						// $2 = Opening run of `
+   (							// $3 = The code block
+   [^\r]*?
+   [^`]					// attacklab: work around lack of lookbehind
+   )
+   \2							// Matching closer
+   (?!`)
+   /gm, function(){...});
+   */
+
+  if (typeof(text) === 'undefined') {
+    text = '';
+  }
+  text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
+    function (wholeMatch, m1, m2, m3) {
+      var c = m3;
+      c = c.replace(/^([ \t]*)/g, '');	// leading whitespace
+      c = c.replace(/[ \t]*$/g, '');	// trailing whitespace
+      c = showdown.subParser('encodeCode')(c);
+      return m1 + '<code>' + c + '</code>';
+    }
+  );
+
+  text = globals.converter._dispatch('codeSpans.after', text, options, globals);
+  return text;
+});
+
+/**
+ * Convert all tabs to spaces
+ */
+showdown.subParser('detab', function (text) {
+  'use strict';
+
+  // expand first n-1 tabs
+  text = text.replace(/\t(?=\t)/g, '    '); // g_tab_width
+
+  // replace the nth with two sentinels
+  text = text.replace(/\t/g, '~A~B');
+
+  // use the sentinel to anchor our regex so it doesn't explode
+  text = text.replace(/~B(.+?)~A/g, function (wholeMatch, m1) {
+    var leadingText = m1,
+        numSpaces = 4 - leadingText.length % 4;  // g_tab_width
+
+    // there *must* be a better way to do this:
+    for (var i = 0; i < numSpaces; i++) {
+      leadingText += ' ';
+    }
+
+    return leadingText;
+  });
+
+  // clean up sentinels
+  text = text.replace(/~A/g, '    ');  // g_tab_width
+  text = text.replace(/~B/g, '');
+
+  return text;
+
+});
+
+/**
+ * Smart processing for ampersands and angle brackets that need to be encoded.
+ */
+showdown.subParser('encodeAmpsAndAngles', function (text) {
+  'use strict';
+  // Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+  // http://bumppo.net/projects/amputator/
+  text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, '&amp;');
+
+  // Encode naked <'s
+  text = text.replace(/<(?![a-z\/?\$!])/gi, '&lt;');
+
+  return text;
+});
+
+/**
+ * Returns the string, with after processing the following backslash escape sequences.
+ *
+ * attacklab: The polite way to do this is with the new escapeCharacters() function:
+ *
+ *    text = escapeCharacters(text,"\\",true);
+ *    text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+ *
+ * ...but we're sidestepping its use of the (slow) RegExp constructor
+ * as an optimization for Firefox.  This function gets called a LOT.
+ */
+showdown.subParser('encodeBackslashEscapes', function (text) {
+  'use strict';
+  text = text.replace(/\\(\\)/g, showdown.helper.escapeCharactersCallback);
+  text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g, showdown.helper.escapeCharactersCallback);
+  return text;
+});
+
+/**
+ * Encode/escape certain characters inside Markdown code runs.
+ * The point is that in code, these characters are literals,
+ * and lose their special Markdown meanings.
+ */
+showdown.subParser('encodeCode', function (text) {
+  'use strict';
+
+  // Encode all ampersands; HTML entities are not
+  // entities within a Markdown code span.
+  text = text.replace(/&/g, '&amp;');
+
+  // Do the angle bracket song and dance:
+  text = text.replace(/</g, '&lt;');
+  text = text.replace(/>/g, '&gt;');
+
+  // Now, escape characters that are magic in Markdown:
+  text = showdown.helper.escapeCharacters(text, '*_{}[]\\', false);
+
+  // jj the line above breaks this:
+  //---
+  //* Item
+  //   1. Subitem
+  //            special char: *
+  // ---
+
+  return text;
+});
+
+/**
+ *  Input: an email address, e.g. "foo@example.com"
+ *
+ *  Output: the email address as a mailto link, with each character
+ *    of the address encoded as either a decimal or hex entity, in
+ *    the hopes of foiling most address harvesting spam bots. E.g.:
+ *
+ *    <a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
+ *       x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
+ *       &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
+ *
+ *  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
+ *  mailing list: <http://tinyurl.com/yu7ue>
+ *
+ */
+showdown.subParser('encodeEmailAddress', function (addr) {
+  'use strict';
+
+  var encode = [
+    function (ch) {
+      return '&#' + ch.charCodeAt(0) + ';';
+    },
+    function (ch) {
+      return '&#x' + ch.charCodeAt(0).toString(16) + ';';
+    },
+    function (ch) {
+      return ch;
+    }
+  ];
+
+  addr = 'mailto:' + addr;
+
+  addr = addr.replace(/./g, function (ch) {
+    if (ch === '@') {
+      // this *must* be encoded. I insist.
+      ch = encode[Math.floor(Math.random() * 2)](ch);
+    } else if (ch !== ':') {
+      // leave ':' alone (to spot mailto: later)
+      var r = Math.random();
+      // roughly 10% raw, 45% hex, 45% dec
+      ch = (
+        r > 0.9 ? encode[2](ch) : r > 0.45 ? encode[1](ch) : encode[0](ch)
+      );
+    }
+    return ch;
+  });
+
+  addr = '<a href="' + addr + '">' + addr + '</a>';
+  addr = addr.replace(/">.+:/g, '">'); // strip the mailto: from the visible part
+
+  return addr;
+});
+
+/**
+ * Within tags -- meaning between < and > -- encode [\ ` * _] so they
+ * don't conflict with their use in Markdown for code, italics and strong.
+ */
+showdown.subParser('escapeSpecialCharsWithinTagAttributes', function (text) {
+  'use strict';
+
+  // Build a regex to find HTML tags and comments.  See Friedl's
+  // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
+  var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
+
+  text = text.replace(regex, function (wholeMatch) {
+    var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, '$1`');
+    tag = showdown.helper.escapeCharacters(tag, '\\`*_', false);
+    return tag;
+  });
+
+  return text;
+});
+
+/**
+ * Handle github codeblocks prior to running HashHTML so that
+ * HTML contained within the codeblock gets escaped properly
+ * Example:
+ * ```ruby
+ *     def hello_world(x)
+ *       puts "Hello, #{x}"
+ *     end
+ * ```
+ */
+showdown.subParser('githubCodeBlocks', function (text, options, globals) {
+  'use strict';
+
+  // early exit if option is not enabled
+  if (!options.ghCodeBlocks) {
+    return text;
+  }
+
+  text = globals.converter._dispatch('githubCodeBlocks.before', text, options, globals);
+
+  text += '~0';
+
+  text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g, function (wholeMatch, language, codeblock) {
+    var end = (options.omitExtraWLInCodeBlocks) ? '' : '\n';
+
+    // First parse the github code block
+    codeblock = showdown.subParser('encodeCode')(codeblock);
+    codeblock = showdown.subParser('detab')(codeblock);
+    codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
+    codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing whitespace
+
+    codeblock = '<pre><code' + (language ? ' class="' + language + ' language-' + language + '"' : '') + '>' + codeblock + end + '</code></pre>';
+
+    codeblock = showdown.subParser('hashBlock')(codeblock, options, globals);
+
+    // Since GHCodeblocks can be false positives, we need to
+    // store the primitive text and the parsed text in a global var,
+    // and then return a token
+    return '\n\n~G' + (globals.ghCodeBlocks.push({text: wholeMatch, codeblock: codeblock}) - 1) + 'G\n\n';
+  });
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return globals.converter._dispatch('githubCodeBlocks.after', text, options, globals);
+});
+
+showdown.subParser('hashBlock', function (text, options, globals) {
+  'use strict';
+  text = text.replace(/(^\n+|\n+$)/g, '');
+  return '\n\n~K' + (globals.gHtmlBlocks.push(text) - 1) + 'K\n\n';
+});
+
+showdown.subParser('hashElement', function (text, options, globals) {
+  'use strict';
+
+  return function (wholeMatch, m1) {
+    var blockText = m1;
+
+    // Undo double lines
+    blockText = blockText.replace(/\n\n/g, '\n');
+    blockText = blockText.replace(/^\n/, '');
+
+    // strip trailing blank lines
+    blockText = blockText.replace(/\n+$/g, '');
+
+    // Replace the element text with a marker ("~KxK" where x is its key)
+    blockText = '\n\n~K' + (globals.gHtmlBlocks.push(blockText) - 1) + 'K\n\n';
+
+    return blockText;
+  };
+});
+
+showdown.subParser('hashHTMLBlocks', function (text, options, globals) {
+  'use strict';
+
+  var blockTags = [
+      'pre',
+      'div',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'blockquote',
+      'table',
+      'dl',
+      'ol',
+      'ul',
+      'script',
+      'noscript',
+      'form',
+      'fieldset',
+      'iframe',
+      'math',
+      'style',
+      'section',
+      'header',
+      'footer',
+      'nav',
+      'article',
+      'aside',
+      'address',
+      'audio',
+      'canvas',
+      'figure',
+      'hgroup',
+      'output',
+      'video',
+      'p'
+    ],
+    repFunc = function (wholeMatch, match, left, right) {
+      var txt = wholeMatch;
+      // check if this html element is marked as markdown
+      // if so, it's contents should be parsed as markdown
+      if (left.search(/\bmarkdown\b/) !== -1) {
+        txt = left + globals.converter.makeHtml(match) + right;
+      }
+      return '\n\n~K' + (globals.gHtmlBlocks.push(txt) - 1) + 'K\n\n';
+    };
+
+  for (var i = 0; i < blockTags.length; ++i) {
+    text = showdown.helper.replaceRecursiveRegExp(text, repFunc, '^ {0,3}<' + blockTags[i] + '\\b[^>]*>', '</' + blockTags[i] + '>', 'gim');
+  }
+
+  // HR SPECIAL CASE
+  text = text.replace(/(\n {0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,
+    showdown.subParser('hashElement')(text, options, globals));
+
+  // Special case for standalone HTML comments
+  text = showdown.helper.replaceRecursiveRegExp(text, function (txt) {
+    return '\n\n~K' + (globals.gHtmlBlocks.push(txt) - 1) + 'K\n\n';
+  }, '^ {0,3}<!--', '-->', 'gm');
+
+  // PHP and ASP-style processor instructions (<?...?> and <%...%>)
+  text = text.replace(/(?:\n\n)( {0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,
+    showdown.subParser('hashElement')(text, options, globals));
+
+  return text;
+});
+
+/**
+ * Hash span elements that should not be parsed as markdown
+ */
+showdown.subParser('hashHTMLSpans', function (text, config, globals) {
+  'use strict';
+
+  var matches = showdown.helper.matchRecursiveRegExp(text, '<code\\b[^>]*>', '</code>', 'gi');
+
+  for (var i = 0; i < matches.length; ++i) {
+    text = text.replace(matches[i][0], '~L' + (globals.gHtmlSpans.push(matches[i][0]) - 1) + 'L');
+  }
+  return text;
+});
+
+/**
+ * Unhash HTML spans
+ */
+showdown.subParser('unhashHTMLSpans', function (text, config, globals) {
+  'use strict';
+
+  for (var i = 0; i < globals.gHtmlSpans.length; ++i) {
+    text = text.replace('~L' + i + 'L', globals.gHtmlSpans[i]);
+  }
+
+  return text;
+});
+
+/**
+ * Hash span elements that should not be parsed as markdown
+ */
+showdown.subParser('hashPreCodeTags', function (text, config, globals) {
+  'use strict';
+
+  var repFunc = function (wholeMatch, match, left, right) {
+    // encode html entities
+    var codeblock = left + showdown.subParser('encodeCode')(match) + right;
+    return '\n\n~G' + (globals.ghCodeBlocks.push({text: wholeMatch, codeblock: codeblock}) - 1) + 'G\n\n';
+  };
+
+  text = showdown.helper.replaceRecursiveRegExp(text, repFunc, '^ {0,3}<pre\\b[^>]*>\\s*<code\\b[^>]*>', '^ {0,3}</code>\\s*</pre>', 'gim');
+  return text;
+});
+
+showdown.subParser('headers', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('headers.before', text, options, globals);
+
+  var prefixHeader = options.prefixHeaderId,
+      headerLevelStart = (isNaN(parseInt(options.headerLevelStart))) ? 1 : parseInt(options.headerLevelStart),
+
+  // Set text-style headers:
+  //	Header 1
+  //	========
+  //
+  //	Header 2
+  //	--------
+  //
+      setextRegexH1 = (options.smoothLivePreview) ? /^(.+)[ \t]*\n={2,}[ \t]*\n+/gm : /^(.+)[ \t]*\n=+[ \t]*\n+/gm,
+      setextRegexH2 = (options.smoothLivePreview) ? /^(.+)[ \t]*\n-{2,}[ \t]*\n+/gm : /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
+
+  text = text.replace(setextRegexH1, function (wholeMatch, m1) {
+
+    var spanGamut = showdown.subParser('spanGamut')(m1, options, globals),
+        hID = (options.noHeaderId) ? '' : ' id="' + headerId(m1) + '"',
+        hLevel = headerLevelStart,
+        hashBlock = '<h' + hLevel + hID + '>' + spanGamut + '</h' + hLevel + '>';
+    return showdown.subParser('hashBlock')(hashBlock, options, globals);
+  });
+
+  text = text.replace(setextRegexH2, function (matchFound, m1) {
+    var spanGamut = showdown.subParser('spanGamut')(m1, options, globals),
+        hID = (options.noHeaderId) ? '' : ' id="' + headerId(m1) + '"',
+        hLevel = headerLevelStart + 1,
+      hashBlock = '<h' + hLevel + hID + '>' + spanGamut + '</h' + hLevel + '>';
+    return showdown.subParser('hashBlock')(hashBlock, options, globals);
+  });
+
+  // atx-style headers:
+  //  # Header 1
+  //  ## Header 2
+  //  ## Header 2 with closing hashes ##
+  //  ...
+  //  ###### Header 6
+  //
+  text = text.replace(/^(#{1,6})[ \t]*(.+?)[ \t]*#*\n+/gm, function (wholeMatch, m1, m2) {
+    var span = showdown.subParser('spanGamut')(m2, options, globals),
+        hID = (options.noHeaderId) ? '' : ' id="' + headerId(m2) + '"',
+        hLevel = headerLevelStart - 1 + m1.length,
+        header = '<h' + hLevel + hID + '>' + span + '</h' + hLevel + '>';
+
+    return showdown.subParser('hashBlock')(header, options, globals);
+  });
+
+  function headerId(m) {
+    var title, escapedId = m.replace(/[^\w]/g, '').toLowerCase();
+
+    if (globals.hashLinkCounts[escapedId]) {
+      title = escapedId + '-' + (globals.hashLinkCounts[escapedId]++);
+    } else {
+      title = escapedId;
+      globals.hashLinkCounts[escapedId] = 1;
+    }
+
+    // Prefix id to prevent causing inadvertent pre-existing style matches.
+    if (prefixHeader === true) {
+      prefixHeader = 'section';
+    }
+
+    if (showdown.helper.isString(prefixHeader)) {
+      return prefixHeader + title;
+    }
+    return title;
+  }
+
+  text = globals.converter._dispatch('headers.after', text, options, globals);
+  return text;
+});
+
+/**
+ * Turn Markdown image shortcuts into <img> tags.
+ */
+showdown.subParser('images', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('images.before', text, options, globals);
+
+  var inlineRegExp    = /!\[(.*?)]\s?\([ \t]*()<?(\S+?)>?(?: =([*\d]+[A-Za-z%]{0,4})x([*\d]+[A-Za-z%]{0,4}))?[ \t]*(?:(['"])(.*?)\6[ \t]*)?\)/g,
+      referenceRegExp = /!\[([^\]]*?)] ?(?:\n *)?\[(.*?)]()()()()()/g;
+
+  function writeImageTag (wholeMatch, altText, linkId, url, width, height, m5, title) {
+
+    var gUrls   = globals.gUrls,
+        gTitles = globals.gTitles,
+        gDims   = globals.gDimensions;
+
+    linkId = linkId.toLowerCase();
+
+    if (!title) {
+      title = '';
+    }
+
+    if (url === '' || url === null) {
+      if (linkId === '' || linkId === null) {
+        // lower-case and turn embedded newlines into spaces
+        linkId = altText.toLowerCase().replace(/ ?\n/g, ' ');
+      }
+      url = '#' + linkId;
+
+      if (!showdown.helper.isUndefined(gUrls[linkId])) {
+        url = gUrls[linkId];
+        if (!showdown.helper.isUndefined(gTitles[linkId])) {
+          title = gTitles[linkId];
+        }
+        if (!showdown.helper.isUndefined(gDims[linkId])) {
+          width = gDims[linkId].width;
+          height = gDims[linkId].height;
+        }
+      } else {
+        return wholeMatch;
+      }
+    }
+
+    altText = altText.replace(/"/g, '&quot;');
+    altText = showdown.helper.escapeCharacters(altText, '*_', false);
+    url = showdown.helper.escapeCharacters(url, '*_', false);
+    var result = '<img src="' + url + '" alt="' + altText + '"';
+
+    if (title) {
+      title = title.replace(/"/g, '&quot;');
+      title = showdown.helper.escapeCharacters(title, '*_', false);
+      result += ' title="' + title + '"';
+    }
+
+    if (width && height) {
+      width  = (width === '*') ? 'auto' : width;
+      height = (height === '*') ? 'auto' : height;
+
+      result += ' width="' + width + '"';
+      result += ' height="' + height + '"';
+    }
+
+    result += ' />';
+
+    return result;
+  }
+
+  // First, handle reference-style labeled images: ![alt text][id]
+  text = text.replace(referenceRegExp, writeImageTag);
+
+  // Next, handle inline images:  ![alt text](url =<width>x<height> "optional title")
+  text = text.replace(inlineRegExp, writeImageTag);
+
+  text = globals.converter._dispatch('images.after', text, options, globals);
+  return text;
+});
+
+showdown.subParser('italicsAndBold', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('italicsAndBold.before', text, options, globals);
+
+  if (options.literalMidWordUnderscores) {
+    //underscores
+    // Since we are consuming a \s character, we need to add it
+    text = text.replace(/(^|\s|>|\b)__(?=\S)([\s\S]+?)__(?=\b|<|\s|$)/gm, '$1<strong>$2</strong>');
+    text = text.replace(/(^|\s|>|\b)_(?=\S)([\s\S]+?)_(?=\b|<|\s|$)/gm, '$1<em>$2</em>');
+    //asterisks
+    text = text.replace(/(\*\*)(?=\S)([^\r]*?\S[*]*)\1/g, '<strong>$2</strong>');
+    text = text.replace(/(\*)(?=\S)([^\r]*?\S)\1/g, '<em>$2</em>');
+
+  } else {
+    // <strong> must go first:
+    text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g, '<strong>$2</strong>');
+    text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g, '<em>$2</em>');
+  }
+
+  text = globals.converter._dispatch('italicsAndBold.after', text, options, globals);
+  return text;
+});
+
+/**
+ * Form HTML ordered (numbered) and unordered (bulleted) lists.
+ */
+showdown.subParser('lists', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('lists.before', text, options, globals);
+  /**
+   * Process the contents of a single ordered or unordered list, splitting it
+   * into individual list items.
+   * @param {string} listStr
+   * @param {boolean} trimTrailing
+   * @returns {string}
+   */
+  function processListItems (listStr, trimTrailing) {
+    // The $g_list_level global keeps track of when we're inside a list.
+    // Each time we enter a list, we increment it; when we leave a list,
+    // we decrement. If it's zero, we're not in a list anymore.
+    //
+    // We do this because when we're not inside a list, we want to treat
+    // something like this:
+    //
+    //    I recommend upgrading to version
+    //    8. Oops, now this line is treated
+    //    as a sub-list.
+    //
+    // As a single paragraph, despite the fact that the second line starts
+    // with a digit-period-space sequence.
+    //
+    // Whereas when we're inside a list (or sub-list), that line will be
+    // treated as the start of a sub-list. What a kludge, huh? This is
+    // an aspect of Markdown's syntax that's hard to parse perfectly
+    // without resorting to mind-reading. Perhaps the solution is to
+    // change the syntax rules such that sub-lists must start with a
+    // starting cardinal number; e.g. "1." or "a.".
+    globals.gListLevel++;
+
+    // trim trailing blank lines:
+    listStr = listStr.replace(/\n{2,}$/, '\n');
+
+    // attacklab: add sentinel to emulate \z
+    listStr += '~0';
+
+    var rgx = /(\n)?(^ {0,3})([*+-]|\d+[.])[ \t]+((\[(x|X| )?])?[ \t]*[^\r]+?(\n{1,2}))(?=\n*(~0| {0,3}([*+-]|\d+[.])[ \t]+))/gm,
+        isParagraphed = (/\n[ \t]*\n(?!~0)/.test(listStr));
+
+    // Since version 1.5, nesting sublists requires 4 spaces (or 1 tab) indentation,
+    // which is a syntax breaking change
+    // activating this option reverts to old behavior
+    if (options.disableForced4SpacesIndentedSublists) {
+      rgx = /(\n)?(^ {0,3})([*+-]|\d+[.])[ \t]+((\[(x|X| )?])?[ \t]*[^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm;
+    }
+
+    listStr = listStr.replace(rgx, function (wholeMatch, m1, m2, m3, m4, taskbtn, checked) {
+      checked = (checked && checked.trim() !== '');
+
+      var item = showdown.subParser('outdent')(m4, options, globals),
+          bulletStyle = '';
+
+      // Support for github tasklists
+      if (taskbtn && options.tasklists) {
+        bulletStyle = ' class="task-list-item" style="list-style-type: none;"';
+        item = item.replace(/^[ \t]*\[(x|X| )?]/m, function () {
+          var otp = '<input type="checkbox" disabled style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;"';
+          if (checked) {
+            otp += ' checked';
+          }
+          otp += '>';
+          return otp;
+        });
+      }
+
+      // m1 - Leading line or
+      // Has a double return (multi paragraph) or
+      // Has sublist
+      if (m1 || (item.search(/\n{2,}/) > -1)) {
+        item = showdown.subParser('githubCodeBlocks')(item, options, globals);
+        item = showdown.subParser('blockGamut')(item, options, globals);
+      } else {
+        // Recursion for sub-lists:
+        item = showdown.subParser('lists')(item, options, globals);
+        item = item.replace(/\n$/, ''); // chomp(item)
+        if (isParagraphed) {
+          item = showdown.subParser('paragraphs')(item, options, globals);
+        } else {
+          item = showdown.subParser('spanGamut')(item, options, globals);
+        }
+      }
+      item =  '<li' + bulletStyle + '>' + item + '</li>\n';
+      return item;
+    });
+
+    // attacklab: strip sentinel
+    listStr = listStr.replace(/~0/g, '');
+
+    globals.gListLevel--;
+
+    if (trimTrailing) {
+      listStr = listStr.replace(/\s+$/, '');
+    }
+
+    return listStr;
+  }
+
+  /**
+   * Check and parse consecutive lists (better fix for issue #142)
+   * @param {string} list
+   * @param {string} listType
+   * @param {boolean} trimTrailing
+   * @returns {string}
+   */
+  function parseConsecutiveLists(list, listType, trimTrailing) {
+    // check if we caught 2 or more consecutive lists by mistake
+    // we use the counterRgx, meaning if listType is UL we look for OL and vice versa
+    var olRgx = (options.disableForced4SpacesIndentedSublists) ? /^ ?\d+\.[ \t]/gm : /^ {0,3}\d+\.[ \t]/gm,
+        ulRgx = (options.disableForced4SpacesIndentedSublists) ? /^ ?[*+-][ \t]/gm : /^ {0,3}[*+-][ \t]/gm,
+        counterRxg = (listType === 'ul') ? olRgx : ulRgx,
+        result = '';
+
+    if (list.search(counterRxg) !== -1) {
+      (function parseCL(txt) {
+        var pos = txt.search(counterRxg);
+        if (pos !== -1) {
+          // slice
+          result += '\n<' + listType + '>\n' + processListItems(txt.slice(0, pos), !!trimTrailing) + '</' + listType + '>\n';
+
+          // invert counterType and listType
+          listType = (listType === 'ul') ? 'ol' : 'ul';
+          counterRxg = (listType === 'ul') ? olRgx : ulRgx;
+
+          //recurse
+          parseCL(txt.slice(pos));
+        } else {
+          result += '\n<' + listType + '>\n' + processListItems(txt, !!trimTrailing) + '</' + listType + '>\n';
+        }
+      })(list);
+    } else {
+      result = '\n<' + listType + '>\n' + processListItems(list, !!trimTrailing) + '</' + listType + '>\n';
+    }
+
+    return result;
+  }
+
+  // add sentinel to hack around khtml/safari bug:
+  // http://bugs.webkit.org/show_bug.cgi?id=11231
+  text += '~0';
+
+  if (globals.gListLevel) {
+    text = text.replace(/^(( {0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
+      function (wholeMatch, list, m2) {
+        var listType = (m2.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
+        return parseConsecutiveLists(list, listType, true);
+      }
+    );
+  } else {
+    text = text.replace(/(\n\n|^\n?)(( {0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
+      function (wholeMatch, m1, list, m3) {
+        var listType = (m3.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
+        return parseConsecutiveLists(list, listType, false);
+      }
+    );
+  }
+
+  // strip sentinel
+  text = text.replace(/~0/, '');
+
+  text = globals.converter._dispatch('lists.after', text, options, globals);
+  return text;
+});
+
+/**
+ * Remove one level of line-leading tabs or spaces
+ */
+showdown.subParser('outdent', function (text) {
+  'use strict';
+
+  // attacklab: hack around Konqueror 3.5.4 bug:
+  // "----------bug".replace(/^-/g,"") == "bug"
+  text = text.replace(/^(\t|[ ]{1,4})/gm, '~0'); // attacklab: g_tab_width
+
+  // attacklab: clean up hack
+  text = text.replace(/~0/g, '');
+
+  return text;
+});
+
+/**
+ *
+ */
+showdown.subParser('paragraphs', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('paragraphs.before', text, options, globals);
+  // Strip leading and trailing lines:
+  text = text.replace(/^\n+/g, '');
+  text = text.replace(/\n+$/g, '');
+
+  var grafs = text.split(/\n{2,}/g),
+      grafsOut = [],
+      end = grafs.length; // Wrap <p> tags
+
+  for (var i = 0; i < end; i++) {
+    var str = grafs[i];
+    // if this is an HTML marker, copy it
+    if (str.search(/~(K|G)(\d+)\1/g) >= 0) {
+      grafsOut.push(str);
+    } else {
+      str = showdown.subParser('spanGamut')(str, options, globals);
+      str = str.replace(/^([ \t]*)/g, '<p>');
+      str += '</p>';
+      grafsOut.push(str);
+    }
+  }
+
+  /** Unhashify HTML blocks */
+  end = grafsOut.length;
+  for (i = 0; i < end; i++) {
+    var blockText = '',
+        grafsOutIt = grafsOut[i],
+        codeFlag = false;
+    // if this is a marker for an html block...
+    while (grafsOutIt.search(/~(K|G)(\d+)\1/) >= 0) {
+      var delim = RegExp.$1,
+          num   = RegExp.$2;
+
+      if (delim === 'K') {
+        blockText = globals.gHtmlBlocks[num];
+      } else {
+        // we need to check if ghBlock is a false positive
+        if (codeFlag) {
+          // use encoded version of all text
+          blockText = showdown.subParser('encodeCode')(globals.ghCodeBlocks[num].text);
+        } else {
+          blockText = globals.ghCodeBlocks[num].codeblock;
+        }
+      }
+      blockText = blockText.replace(/\$/g, '$$$$'); // Escape any dollar signs
+
+      grafsOutIt = grafsOutIt.replace(/(\n\n)?~(K|G)\d+\2(\n\n)?/, blockText);
+      // Check if grafsOutIt is a pre->code
+      if (/^<pre\b[^>]*>\s*<code\b[^>]*>/.test(grafsOutIt)) {
+        codeFlag = true;
+      }
+    }
+    grafsOut[i] = grafsOutIt;
+  }
+  text = grafsOut.join('\n');
+  // Strip leading and trailing lines:
+  text = text.replace(/^\n+/g, '');
+  text = text.replace(/\n+$/g, '');
+  return globals.converter._dispatch('paragraphs.after', text, options, globals);
+});
+
+/**
+ * Run extension
+ */
+showdown.subParser('runExtension', function (ext, text, options, globals) {
+  'use strict';
+
+  if (ext.filter) {
+    text = ext.filter(text, globals.converter, options);
+
+  } else if (ext.regex) {
+    // TODO remove this when old extension loading mechanism is deprecated
+    var re = ext.regex;
+    if (!re instanceof RegExp) {
+      re = new RegExp(re, 'g');
+    }
+    text = text.replace(re, ext.replace);
+  }
+
+  return text;
+});
+
+/**
+ * These are all the transformations that occur *within* block-level
+ * tags like paragraphs, headers, and list items.
+ */
+showdown.subParser('spanGamut', function (text, options, globals) {
+  'use strict';
+
+  text = globals.converter._dispatch('spanGamut.before', text, options, globals);
+  text = showdown.subParser('codeSpans')(text, options, globals);
+  text = showdown.subParser('escapeSpecialCharsWithinTagAttributes')(text, options, globals);
+  text = showdown.subParser('encodeBackslashEscapes')(text, options, globals);
+
+  // Process anchor and image tags. Images must come first,
+  // because ![foo][f] looks like an anchor.
+  text = showdown.subParser('images')(text, options, globals);
+  text = showdown.subParser('anchors')(text, options, globals);
+
+  // Make links out of things like `<http://example.com/>`
+  // Must come after _DoAnchors(), because you can use < and >
+  // delimiters in inline links like [this](<url>).
+  text = showdown.subParser('autoLinks')(text, options, globals);
+  text = showdown.subParser('encodeAmpsAndAngles')(text, options, globals);
+  text = showdown.subParser('italicsAndBold')(text, options, globals);
+  text = showdown.subParser('strikethrough')(text, options, globals);
+
+  // Do hard breaks
+
+  // GFM style hard breaks
+  if (options.simpleLineBreaks) {
+    text = text.replace(/\n/g, '<br />\n');
+  } else {
+    text = text.replace(/  +\n/g, '<br />\n');
+  }
+
+  text = globals.converter._dispatch('spanGamut.after', text, options, globals);
+  return text;
+});
+
+showdown.subParser('strikethrough', function (text, options, globals) {
+  'use strict';
+
+  if (options.strikethrough) {
+    text = globals.converter._dispatch('strikethrough.before', text, options, globals);
+    text = text.replace(/(?:~T){2}([\s\S]+?)(?:~T){2}/g, '<del>$1</del>');
+    text = globals.converter._dispatch('strikethrough.after', text, options, globals);
+  }
+
+  return text;
+});
+
+/**
+ * Strip any lines consisting only of spaces and tabs.
+ * This makes subsequent regexs easier to write, because we can
+ * match consecutive blank lines with /\n+/ instead of something
+ * contorted like /[ \t]*\n+/
+ */
+showdown.subParser('stripBlankLines', function (text) {
+  'use strict';
+  return text.replace(/^[ \t]+$/mg, '');
+});
+
+/**
+ * Strips link definitions from text, stores the URLs and titles in
+ * hash references.
+ * Link defs are in the form: ^[id]: url "optional title"
+ */
+showdown.subParser('stripLinkDefinitions', function (text, options, globals) {
+  'use strict';
+
+  var regex = /^ {0,3}\[(.+)]:[ \t]*\n?[ \t]*<?(\S+?)>?(?: =([*\d]+[A-Za-z%]{0,4})x([*\d]+[A-Za-z%]{0,4}))?[ \t]*\n?[ \t]*(?:(\n*)["|'(](.+?)["|')][ \t]*)?(?:\n+|(?=~0))/gm;
+
+  // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+  text += '~0';
+
+  text = text.replace(regex, function (wholeMatch, linkId, url, width, height, blankLines, title) {
+    linkId = linkId.toLowerCase();
+    globals.gUrls[linkId] = showdown.subParser('encodeAmpsAndAngles')(url);  // Link IDs are case-insensitive
+
+    if (blankLines) {
+      // Oops, found blank lines, so it's not a title.
+      // Put back the parenthetical statement we stole.
+      return blankLines + title;
+
+    } else {
+      if (title) {
+        globals.gTitles[linkId] = title.replace(/"|'/g, '&quot;');
+      }
+      if (options.parseImgDimensions && width && height) {
+        globals.gDimensions[linkId] = {
+          width:  width,
+          height: height
+        };
+      }
+    }
+    // Completely remove the definition from the text
+    return '';
+  });
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return text;
+});
+
+showdown.subParser('tables', function (text, options, globals) {
+  'use strict';
+
+  if (!options.tables) {
+    return text;
+  }
+
+  var tableRgx = /^ {0,3}\|?.+\|.+\n[ \t]{0,3}\|?[ \t]*:?[ \t]*(?:-|=){2,}[ \t]*:?[ \t]*\|[ \t]*:?[ \t]*(?:-|=){2,}[\s\S]+?(?:\n\n|~0)/gm;
+
+  function parseStyles(sLine) {
+    if (/^:[ \t]*--*$/.test(sLine)) {
+      return ' style="text-align:left;"';
+    } else if (/^--*[ \t]*:[ \t]*$/.test(sLine)) {
+      return ' style="text-align:right;"';
+    } else if (/^:[ \t]*--*[ \t]*:$/.test(sLine)) {
+      return ' style="text-align:center;"';
+    } else {
+      return '';
+    }
+  }
+
+  function parseHeaders(header, style) {
+    var id = '';
+    header = header.trim();
+    if (options.tableHeaderId) {
+      id = ' id="' + header.replace(/ /g, '_').toLowerCase() + '"';
+    }
+    header = showdown.subParser('spanGamut')(header, options, globals);
+
+    return '<th' + id + style + '>' + header + '</th>\n';
+  }
+
+  function parseCells(cell, style) {
+    var subText = showdown.subParser('spanGamut')(cell, options, globals);
+    return '<td' + style + '>' + subText + '</td>\n';
+  }
+
+  function buildTable(headers, cells) {
+    var tb = '<table>\n<thead>\n<tr>\n',
+        tblLgn = headers.length;
+
+    for (var i = 0; i < tblLgn; ++i) {
+      tb += headers[i];
+    }
+    tb += '</tr>\n</thead>\n<tbody>\n';
+
+    for (i = 0; i < cells.length; ++i) {
+      tb += '<tr>\n';
+      for (var ii = 0; ii < tblLgn; ++ii) {
+        tb += cells[i][ii];
+      }
+      tb += '</tr>\n';
+    }
+    tb += '</tbody>\n</table>\n';
+    return tb;
+  }
+
+  text = globals.converter._dispatch('tables.before', text, options, globals);
+
+  text = text.replace(tableRgx, function (rawTable) {
+
+    var i, tableLines = rawTable.split('\n');
+
+    // strip wrong first and last column if wrapped tables are used
+    for (i = 0; i < tableLines.length; ++i) {
+      if (/^ {0,3}\|/.test(tableLines[i])) {
+        tableLines[i] = tableLines[i].replace(/^ {0,3}\|/, '');
+      }
+      if (/\|[ \t]*$/.test(tableLines[i])) {
+        tableLines[i] = tableLines[i].replace(/\|[ \t]*$/, '');
+      }
+    }
+
+    var rawHeaders = tableLines[0].split('|').map(function (s) { return s.trim();}),
+        rawStyles = tableLines[1].split('|').map(function (s) { return s.trim();}),
+        rawCells = [],
+        headers = [],
+        styles = [],
+        cells = [];
+
+    tableLines.shift();
+    tableLines.shift();
+
+    for (i = 0; i < tableLines.length; ++i) {
+      if (tableLines[i].trim() === '') {
+        continue;
+      }
+      rawCells.push(
+        tableLines[i]
+          .split('|')
+          .map(function (s) {
+            return s.trim();
+          })
+      );
+    }
+
+    if (rawHeaders.length < rawStyles.length) {
+      return rawTable;
+    }
+
+    for (i = 0; i < rawStyles.length; ++i) {
+      styles.push(parseStyles(rawStyles[i]));
+    }
+
+    for (i = 0; i < rawHeaders.length; ++i) {
+      if (showdown.helper.isUndefined(styles[i])) {
+        styles[i] = '';
+      }
+      headers.push(parseHeaders(rawHeaders[i], styles[i]));
+    }
+
+    for (i = 0; i < rawCells.length; ++i) {
+      var row = [];
+      for (var ii = 0; ii < headers.length; ++ii) {
+        if (showdown.helper.isUndefined(rawCells[i][ii])) {
+
+        }
+        row.push(parseCells(rawCells[i][ii], styles[ii]));
+      }
+      cells.push(row);
+    }
+
+    return buildTable(headers, cells);
+  });
+
+  text = globals.converter._dispatch('tables.after', text, options, globals);
+
+  return text;
+});
+
+/**
+ * Swap back in all the special characters we've hidden.
+ */
+showdown.subParser('unescapeSpecialChars', function (text) {
+  'use strict';
+
+  text = text.replace(/~E(\d+)E/g, function (wholeMatch, m1) {
+    var charCodeToReplace = parseInt(m1);
+    return String.fromCharCode(charCodeToReplace);
+  });
+  return text;
+});
+
+var root = this;
+
+module.exports = showdown;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * jQuery JavaScript Library v3.1.1
  * https://jquery.com/
  *
@@ -10176,10 +12713,11 @@ jQuery.parseJSON = JSON.parse;
 // AMD loader is present. jQuery is a special case. For more information, see
 // https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
 
-if ( typeof define === "function" && define.amd ) {
-	define( "jquery", [], function() {
+if ( true ) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
 		return jQuery;
-	} );
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
 
 
@@ -10218,3 +12756,2693 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function() {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		var result = [];
+		for(var i = 0; i < this.length; i++) {
+			var item = this[i];
+			if(item[2]) {
+				result.push("@media " + item[2] + "{" + item[1] + "}");
+			} else {
+				result.push(item[1]);
+			}
+		}
+		return result.join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var require;var require;/*!
+ * clipboard.js v1.5.15
+ * https://zenorocha.github.io/clipboard.js
+ *
+ * Licensed MIT © Zeno Rocha
+ */
+!function(e){if(true)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.Clipboard=e()}}(function(){var e,t,n;return function e(t,n,i){function o(a,c){if(!n[a]){if(!t[a]){var l="function"==typeof require&&require;if(!c&&l)return require(a,!0);if(r)return r(a,!0);var s=new Error("Cannot find module '"+a+"'");throw s.code="MODULE_NOT_FOUND",s}var u=n[a]={exports:{}};t[a][0].call(u.exports,function(e){var n=t[a][1][e];return o(n?n:e)},u,u.exports,e,t,n,i)}return n[a].exports}for(var r="function"==typeof require&&require,a=0;a<i.length;a++)o(i[a]);return o}({1:[function(e,t,n){function i(e,t){for(;e&&e!==document;){if(e.matches(t))return e;e=e.parentNode}}if(Element&&!Element.prototype.matches){var o=Element.prototype;o.matches=o.matchesSelector||o.mozMatchesSelector||o.msMatchesSelector||o.oMatchesSelector||o.webkitMatchesSelector}t.exports=i},{}],2:[function(e,t,n){function i(e,t,n,i,r){var a=o.apply(this,arguments);return e.addEventListener(n,a,r),{destroy:function(){e.removeEventListener(n,a,r)}}}function o(e,t,n,i){return function(n){n.delegateTarget=r(n.target,t),n.delegateTarget&&i.call(e,n)}}var r=e("./closest");t.exports=i},{"./closest":1}],3:[function(e,t,n){n.node=function(e){return void 0!==e&&e instanceof HTMLElement&&1===e.nodeType},n.nodeList=function(e){var t=Object.prototype.toString.call(e);return void 0!==e&&("[object NodeList]"===t||"[object HTMLCollection]"===t)&&"length"in e&&(0===e.length||n.node(e[0]))},n.string=function(e){return"string"==typeof e||e instanceof String},n.fn=function(e){var t=Object.prototype.toString.call(e);return"[object Function]"===t}},{}],4:[function(e,t,n){function i(e,t,n){if(!e&&!t&&!n)throw new Error("Missing required arguments");if(!c.string(t))throw new TypeError("Second argument must be a String");if(!c.fn(n))throw new TypeError("Third argument must be a Function");if(c.node(e))return o(e,t,n);if(c.nodeList(e))return r(e,t,n);if(c.string(e))return a(e,t,n);throw new TypeError("First argument must be a String, HTMLElement, HTMLCollection, or NodeList")}function o(e,t,n){return e.addEventListener(t,n),{destroy:function(){e.removeEventListener(t,n)}}}function r(e,t,n){return Array.prototype.forEach.call(e,function(e){e.addEventListener(t,n)}),{destroy:function(){Array.prototype.forEach.call(e,function(e){e.removeEventListener(t,n)})}}}function a(e,t,n){return l(document.body,e,t,n)}var c=e("./is"),l=e("delegate");t.exports=i},{"./is":3,delegate:2}],5:[function(e,t,n){function i(e){var t;if("SELECT"===e.nodeName)e.focus(),t=e.value;else if("INPUT"===e.nodeName||"TEXTAREA"===e.nodeName)e.focus(),e.setSelectionRange(0,e.value.length),t=e.value;else{e.hasAttribute("contenteditable")&&e.focus();var n=window.getSelection(),i=document.createRange();i.selectNodeContents(e),n.removeAllRanges(),n.addRange(i),t=n.toString()}return t}t.exports=i},{}],6:[function(e,t,n){function i(){}i.prototype={on:function(e,t,n){var i=this.e||(this.e={});return(i[e]||(i[e]=[])).push({fn:t,ctx:n}),this},once:function(e,t,n){function i(){o.off(e,i),t.apply(n,arguments)}var o=this;return i._=t,this.on(e,i,n)},emit:function(e){var t=[].slice.call(arguments,1),n=((this.e||(this.e={}))[e]||[]).slice(),i=0,o=n.length;for(i;i<o;i++)n[i].fn.apply(n[i].ctx,t);return this},off:function(e,t){var n=this.e||(this.e={}),i=n[e],o=[];if(i&&t)for(var r=0,a=i.length;r<a;r++)i[r].fn!==t&&i[r].fn._!==t&&o.push(i[r]);return o.length?n[e]=o:delete n[e],this}},t.exports=i},{}],7:[function(t,n,i){!function(o,r){if("function"==typeof e&&e.amd)e(["module","select"],r);else if("undefined"!=typeof i)r(n,t("select"));else{var a={exports:{}};r(a,o.select),o.clipboardAction=a.exports}}(this,function(e,t){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=n(t),r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},a=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),c=function(){function e(t){i(this,e),this.resolveOptions(t),this.initSelection()}return a(e,[{key:"resolveOptions",value:function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action=t.action,this.emitter=t.emitter,this.target=t.target,this.text=t.text,this.trigger=t.trigger,this.selectedText=""}},{key:"initSelection",value:function e(){this.text?this.selectFake():this.target&&this.selectTarget()}},{key:"selectFake",value:function e(){var t=this,n="rtl"==document.documentElement.getAttribute("dir");this.removeFake(),this.fakeHandlerCallback=function(){return t.removeFake()},this.fakeHandler=document.body.addEventListener("click",this.fakeHandlerCallback)||!0,this.fakeElem=document.createElement("textarea"),this.fakeElem.style.fontSize="12pt",this.fakeElem.style.border="0",this.fakeElem.style.padding="0",this.fakeElem.style.margin="0",this.fakeElem.style.position="absolute",this.fakeElem.style[n?"right":"left"]="-9999px";var i=window.pageYOffset||document.documentElement.scrollTop;this.fakeElem.addEventListener("focus",window.scrollTo(0,i)),this.fakeElem.style.top=i+"px",this.fakeElem.setAttribute("readonly",""),this.fakeElem.value=this.text,document.body.appendChild(this.fakeElem),this.selectedText=(0,o.default)(this.fakeElem),this.copyText()}},{key:"removeFake",value:function e(){this.fakeHandler&&(document.body.removeEventListener("click",this.fakeHandlerCallback),this.fakeHandler=null,this.fakeHandlerCallback=null),this.fakeElem&&(document.body.removeChild(this.fakeElem),this.fakeElem=null)}},{key:"selectTarget",value:function e(){this.selectedText=(0,o.default)(this.target),this.copyText()}},{key:"copyText",value:function e(){var t=void 0;try{t=document.execCommand(this.action)}catch(e){t=!1}this.handleResult(t)}},{key:"handleResult",value:function e(t){this.emitter.emit(t?"success":"error",{action:this.action,text:this.selectedText,trigger:this.trigger,clearSelection:this.clearSelection.bind(this)})}},{key:"clearSelection",value:function e(){this.target&&this.target.blur(),window.getSelection().removeAllRanges()}},{key:"destroy",value:function e(){this.removeFake()}},{key:"action",set:function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"copy";if(this._action=t,"copy"!==this._action&&"cut"!==this._action)throw new Error('Invalid "action" value, use either "copy" or "cut"')},get:function e(){return this._action}},{key:"target",set:function e(t){if(void 0!==t){if(!t||"object"!==("undefined"==typeof t?"undefined":r(t))||1!==t.nodeType)throw new Error('Invalid "target" value, use a valid Element');if("copy"===this.action&&t.hasAttribute("disabled"))throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');if("cut"===this.action&&(t.hasAttribute("readonly")||t.hasAttribute("disabled")))throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');this._target=t}},get:function e(){return this._target}}]),e}();e.exports=c})},{select:5}],8:[function(t,n,i){!function(o,r){if("function"==typeof e&&e.amd)e(["module","./clipboard-action","tiny-emitter","good-listener"],r);else if("undefined"!=typeof i)r(n,t("./clipboard-action"),t("tiny-emitter"),t("good-listener"));else{var a={exports:{}};r(a,o.clipboardAction,o.tinyEmitter,o.goodListener),o.clipboard=a.exports}}(this,function(e,t,n,i){"use strict";function o(e){return e&&e.__esModule?e:{default:e}}function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function a(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function c(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function l(e,t){var n="data-clipboard-"+e;if(t.hasAttribute(n))return t.getAttribute(n)}var s=o(t),u=o(n),f=o(i),d=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),h=function(e){function t(e,n){r(this,t);var i=a(this,(t.__proto__||Object.getPrototypeOf(t)).call(this));return i.resolveOptions(n),i.listenClick(e),i}return c(t,e),d(t,[{key:"resolveOptions",value:function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action="function"==typeof t.action?t.action:this.defaultAction,this.target="function"==typeof t.target?t.target:this.defaultTarget,this.text="function"==typeof t.text?t.text:this.defaultText}},{key:"listenClick",value:function e(t){var n=this;this.listener=(0,f.default)(t,"click",function(e){return n.onClick(e)})}},{key:"onClick",value:function e(t){var n=t.delegateTarget||t.currentTarget;this.clipboardAction&&(this.clipboardAction=null),this.clipboardAction=new s.default({action:this.action(n),target:this.target(n),text:this.text(n),trigger:n,emitter:this})}},{key:"defaultAction",value:function e(t){return l("action",t)}},{key:"defaultTarget",value:function e(t){var n=l("target",t);if(n)return document.querySelector(n)}},{key:"defaultText",value:function e(t){return l("text",t)}},{key:"destroy",value:function e(){this.listener.destroy(),this.clipboardAction&&(this.clipboardAction.destroy(),this.clipboardAction=null)}}]),t}(u.default);e.exports=h})},{"./clipboard-action":7,"good-listener":4,"tiny-emitter":6}]},{},[8])(8)});
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+/**
+ * @license
+ * Copyright (C) 2013 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview
+ * <div style="white-space: pre">
+ * Looks at query parameters to decide which language handlers and style-sheets
+ * to load.
+ *
+ * Query Parameter     Format           Effect                        Default
+ * +------------------+---------------+------------------------------+--------+
+ * | autorun=         | true | false  | If true then prettyPrint()   | "true" |
+ * |                  |               | is called on page load.      |        |
+ * +------------------+---------------+------------------------------+--------+
+ * | lang=            | language name | Loads the language handler   | Can    |
+ * |                  |               | named "lang-<NAME>.js".      | appear |
+ * |                  |               | See available handlers at    | many   |
+ * |                  |               | https://github.com/google/   | times. |
+ * |                  |               | code-prettify/tree/master/   |        |
+ * |                  |               | src                          |        |
+ * +------------------+---------------+------------------------------+--------+
+ * | skin=            | skin name     | Loads the skin stylesheet    | none.  |
+ * |                  |               | named "<NAME>.css".          |        |
+ * |                  |               | https://cdn.rawgit.com/      |        |
+ * |                  |               | google/code-prettify/master/ |        |
+ * |                  |               | styles/index.html            |        |
+ * +------------------+---------------+------------------------------+--------+
+ * | callback=        | JS identifier | When "prettyPrint" finishes  | none   |
+ * |                  |               | window.exports[js_ident] is  |        |
+ * |                  |               | called.                      |        |
+ * |                  |               | The callback must be under   |        |
+ * |                  |               | exports to reduce the risk   |        |
+ * |                  |               | of XSS via query parameter   |        |
+ * |                  |               | injection.                   |        |
+ * +------------------+---------------+------------------------------+--------+
+ *
+ * Exmaples
+ * .../prettify.js?lang=css&skin=sunburst
+ *   1. Loads the CSS language handler which can be used to prettify CSS
+ *      stylesheets, HTML <style> element bodies and style="..." attributes
+ *      values.
+ *   2. Loads the sunburst.css stylesheet instead of the default prettify.css
+ *      stylesheet.
+ *      A gallery of stylesheets is available at
+ *      https://cdn.rawgit.com/google/code-prettify/master/styles/index.html
+ *   3. Since autorun=false is not specified, calls prettyPrint() on page load.
+ * </div>
+ */
+
+/**
+ * @typedef {!Array.<number|string>}
+ * Alternating indices and the decorations that should be inserted there.
+ * The indices are monotonically increasing.
+ */
+var DecorationsT;
+
+/**
+ * @typedef {!{
+*   sourceNode: !Element,
+*   pre: !(number|boolean),
+*   langExtension: ?string,
+*   numberLines: ?(number|boolean),
+*   sourceCode: ?string,
+*   spans: ?(Array.<number|Node>),
+*   basePos: ?number,
+*   decorations: ?DecorationsT
+* }}
+ * <dl>
+ *  <dt>sourceNode<dd>the element containing the source
+ *  <dt>sourceCode<dd>source as plain text
+ *  <dt>pre<dd>truthy if white-space in text nodes
+ *     should be considered significant.
+ *  <dt>spans<dd> alternating span start indices into source
+ *     and the text node or element (e.g. {@code <BR>}) corresponding to that
+ *     span.
+ *  <dt>decorations<dd>an array of style classes preceded
+ *     by the position at which they start in job.sourceCode in order
+ *  <dt>basePos<dd>integer position of this.sourceCode in the larger chunk of
+ *     source.
+ * </dl>
+ */
+var JobT;
+
+/**
+ * @typedef {!{
+*   sourceCode: string,
+*   spans: !(Array.<number|Node>)
+* }}
+ * <dl>
+ *  <dt>sourceCode<dd>source as plain text
+ *  <dt>spans<dd> alternating span start indices into source
+ *     and the text node or element (e.g. {@code <BR>}) corresponding to that
+ *     span.
+ * </dl>
+ */
+var SourceSpansT;
+
+/** @define {boolean} */
+var IN_GLOBAL_SCOPE = false;
+
+(function () {
+  "use strict";
+
+  var win = window;
+  var doc = document;
+  var root = doc.documentElement;
+  var head = doc['head'] || doc.getElementsByTagName("head")[0] || root;
+
+  // From http://javascript.nwbox.com/ContentLoaded/contentloaded.js
+  // Author: Diego Perini (diego.perini at gmail.com)
+  // Summary: cross-browser wrapper for DOMContentLoaded
+  // Updated: 20101020
+  // License: MIT
+  // Version: 1.2
+  function contentLoaded(callback) {
+    var addEventListener = doc['addEventListener'];
+    var done = false, top = true,
+      add = addEventListener ? 'addEventListener' : 'attachEvent',
+      rem = addEventListener ? 'removeEventListener' : 'detachEvent',
+      pre = addEventListener ? '' : 'on',
+
+      init = function(e) {
+        if (e.type == 'readystatechange' && doc.readyState != 'complete') {
+          return;
+        }
+        (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+        if (!done && (done = true)) { callback.call(win, e.type || e); }
+      },
+
+      poll = function() {
+        try {
+          root.doScroll('left');
+        } catch(e) {
+          win.setTimeout(poll, 50);
+          return;
+        }
+        init('poll');
+      };
+
+    if (doc.readyState == 'complete') {
+      callback.call(win, 'lazy');
+    } else {
+      if (doc.createEventObject && root.doScroll) {
+        try { top = !win.frameElement; } catch(e) { }
+        if (top) { poll(); }
+      }
+      doc[add](pre + 'DOMContentLoaded', init, false);
+      doc[add](pre + 'readystatechange', init, false);
+      win[add](pre + 'load', init, false);
+    }
+  }
+
+  // Given a list of URLs to stylesheets, loads the first that loads without
+  // triggering an error event.
+  function loadStylesheetsFallingBack(stylesheets) {
+    var n = stylesheets.length;
+    function load(i) {
+      if (i === n) { return; }
+      var link = doc.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      if (i + 1 < n) {
+        // http://pieisgood.org/test/script-link-events/ indicates that many
+        // versions of IE do not support onerror on <link>s, though
+        // http://msdn.microsoft.com/en-us/library/ie/ms535848(v=vs.85).aspx
+        // indicates that recent IEs do support error.
+        link.error = link.onerror = function () { load(i + 1); };
+      }
+      link.href = stylesheets[i];
+      head.appendChild(link);
+    }
+    load(0);
+  }
+
+  var scriptQuery = '';
+  // Look for the <script> node that loads this script to get its parameters.
+  // This starts looking at the end instead of just considering the last
+  // because deferred and async scripts run out of order.
+  // If the script is loaded twice, then this will run in reverse order.
+  var scripts = doc.getElementsByTagName('script');
+  for (var i = scripts.length; --i >= 0;) {
+    var script = scripts[i];
+    var match = script.src.match(
+      /^[^?#]*\/run_prettify\.js(\?[^#]*)?(?:#.*)?$/);
+    if (match) {
+      scriptQuery = match[1] || '';
+      // Remove the script from the DOM so that multiple runs at least run
+      // multiple times even if parameter sets are interpreted in reverse
+      // order.
+      script.parentNode.removeChild(script);
+      break;
+    }
+  }
+
+  // Pull parameters into local variables.
+  var autorun = true;
+  var langs = [];
+  var skins = [];
+  var callbacks = [];
+  scriptQuery.replace(
+    /[?&]([^&=]+)=([^&]+)/g,
+    function (_, name, value) {
+      value = decodeURIComponent(value);
+      name = decodeURIComponent(name);
+      if (name == 'autorun')   { autorun = !/^[0fn]/i.test(value); } else
+      if (name == 'lang')      { langs.push(value);                } else
+      if (name == 'skin')      { skins.push(value);                } else
+      if (name == 'callback')  { callbacks.push(value);            }
+    });
+
+  // Use https to avoid mixed content warnings in client pages and to
+  // prevent a MITM from rewrite prettify mid-flight.
+  // This only works if this script is loaded via https : something
+  // over which we exercise no control.
+  var LOADER_BASE_URL =
+    'https://cdn.rawgit.com/google/code-prettify/master/loader';
+
+  for (var i = 0, n = langs.length; i < n; ++i) (function (lang) {
+    var script = doc.createElement("script");
+
+    // Excerpted from jQuery.ajaxTransport("script") to fire events when
+    // a script is finished loading.
+    // Attach handlers for each script
+    script.onload = script.onerror = script.onreadystatechange = function () {
+      if (script && (
+        !script.readyState || /loaded|complete/.test(script.readyState))) {
+        // Handle memory leak in IE
+        script.onerror = script.onload = script.onreadystatechange = null;
+
+        --pendingLanguages;
+        checkPendingLanguages();
+
+        // Remove the script
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+
+        script = null;
+      }
+    };
+
+    script.type = 'text/javascript';
+    script.src = LOADER_BASE_URL
+      + '/lang-' + encodeURIComponent(langs[i]) + '.js';
+
+    // Circumvent IE6 bugs with base elements (#2709 and #4378) by prepending
+    head.insertBefore(script, head.firstChild);
+  })(langs[i]);
+
+  var pendingLanguages = langs.length;
+  function checkPendingLanguages() {
+    if (!pendingLanguages) {
+      win.setTimeout(onLangsLoaded, 0);
+    }
+  }
+
+  var skinUrls = [];
+  for (var i = 0, n = skins.length; i < n; ++i) {
+    skinUrls.push(LOADER_BASE_URL
+      + '/skins/' + encodeURIComponent(skins[i]) + '.css');
+  }
+  // skinUrls.push(LOADER_BASE_URL + '/prettify.css');
+  // loadStylesheetsFallingBack(skinUrls);
+
+  var prettyPrint = (function () {
+    /**
+     * @license
+     * Copyright (C) 2006 Google Inc.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+
+    /**
+     * @fileoverview
+     * some functions for browser-side pretty printing of code contained in html.
+     *
+     * <p>
+     * For a fairly comprehensive set of languages see the
+     * <a href="https://github.com/google/code-prettify#for-which-languages-does-it-work">README</a>
+     * file that came with this source.  At a minimum, the lexer should work on a
+     * number of languages including C and friends, Java, Python, Bash, SQL, HTML,
+     * XML, CSS, Javascript, and Makefiles.  It works passably on Ruby, PHP and Awk
+     * and a subset of Perl, but, because of commenting conventions, doesn't work on
+     * Smalltalk, Lisp-like, or CAML-like languages without an explicit lang class.
+     * <p>
+     * Usage: <ol>
+     * <li> include this source file in an html page via
+     *   {@code <script type="text/javascript" src="/path/to/prettify.js"></script>}
+     * <li> define style rules.  See the example page for examples.
+     * <li> mark the {@code <pre>} and {@code <code>} tags in your source with
+     *    {@code class=prettyprint.}
+     *    You can also use the (html deprecated) {@code <xmp>} tag, but the pretty
+     *    printer needs to do more substantial DOM manipulations to support that, so
+     *    some css styles may not be preserved.
+     * </ol>
+     * That's it.  I wanted to keep the API as simple as possible, so there's no
+     * need to specify which language the code is in, but if you wish, you can add
+     * another class to the {@code <pre>} or {@code <code>} element to specify the
+     * language, as in {@code <pre class="prettyprint lang-java">}.  Any class that
+     * starts with "lang-" followed by a file extension, specifies the file type.
+     * See the "lang-*.js" files in this directory for code that implements
+     * per-language file handlers.
+     * <p>
+     * Change log:<br>
+     * cbeust, 2006/08/22
+     * <blockquote>
+     *   Java annotations (start with "@") are now captured as literals ("lit")
+     * </blockquote>
+     * @requires console
+     */
+
+    // JSLint declarations
+    /*global console, document, navigator, setTimeout, window, define */
+
+
+    /**
+     * {@type !{
+     *   'createSimpleLexer': function (Array, Array): (function (JobT)),
+     *   'registerLangHandler': function (function (JobT), Array.<string>),
+     *   'PR_ATTRIB_NAME': string,
+     *   'PR_ATTRIB_NAME': string,
+     *   'PR_ATTRIB_VALUE': string,
+     *   'PR_COMMENT': string,
+     *   'PR_DECLARATION': string,
+     *   'PR_KEYWORD': string,
+     *   'PR_LITERAL': string,
+     *   'PR_NOCODE': string,
+     *   'PR_PLAIN': string,
+     *   'PR_PUNCTUATION': string,
+     *   'PR_SOURCE': string,
+     *   'PR_STRING': string,
+     *   'PR_TAG': string,
+     *   'PR_TYPE': string,
+     *   'prettyPrintOne': function (string, string, number|boolean),
+     *   'prettyPrint': function (?function, ?(HTMLElement|HTMLDocument))
+     * }}
+     * @const
+     */
+    var PR;
+
+    /**
+     * Split {@code prettyPrint} into multiple timeouts so as not to interfere with
+     * UI events.
+     * If set to {@code false}, {@code prettyPrint()} is synchronous.
+     */
+    window['PR_SHOULD_USE_CONTINUATION'] = true;
+
+    /**
+     * Pretty print a chunk of code.
+     * @param {string} sourceCodeHtml The HTML to pretty print.
+     * @param {string} opt_langExtension The language name to use.
+     *     Typically, a filename extension like 'cpp' or 'java'.
+     * @param {number|boolean} opt_numberLines True to number lines,
+     *     or the 1-indexed number of the first line in sourceCodeHtml.
+     * @return {string} code as html, but prettier
+     */
+    var prettyPrintOne;
+    /**
+     * Find all the {@code <pre>} and {@code <code>} tags in the DOM with
+     * {@code class=prettyprint} and prettify them.
+     *
+     * @param {Function} opt_whenDone called when prettifying is done.
+     * @param {HTMLElement|HTMLDocument} opt_root an element or document
+     *   containing all the elements to pretty print.
+     *   Defaults to {@code document.body}.
+     */
+    var prettyPrint;
+
+
+    (function () {
+      var win = window;
+      // Keyword lists for various languages.
+      // We use things that coerce to strings to make them compact when minified
+      // and to defeat aggressive optimizers that fold large string constants.
+      var FLOW_CONTROL_KEYWORDS = ["break,continue,do,else,for,if,return,while"];
+      var C_KEYWORDS = [FLOW_CONTROL_KEYWORDS,"auto,case,char,const,default," +
+      "double,enum,extern,float,goto,inline,int,long,register,short,signed," +
+      "sizeof,static,struct,switch,typedef,union,unsigned,void,volatile"];
+      var COMMON_KEYWORDS = [C_KEYWORDS,"catch,class,delete,false,import," +
+      "new,operator,private,protected,public,this,throw,true,try,typeof"];
+      var CPP_KEYWORDS = [COMMON_KEYWORDS,"alignof,align_union,asm,axiom,bool," +
+      "concept,concept_map,const_cast,constexpr,decltype,delegate," +
+      "dynamic_cast,explicit,export,friend,generic,late_check," +
+      "mutable,namespace,nullptr,property,reinterpret_cast,static_assert," +
+      "static_cast,template,typeid,typename,using,virtual,where"];
+      var JAVA_KEYWORDS = [COMMON_KEYWORDS,
+        "abstract,assert,boolean,byte,extends,finally,final,implements,import," +
+        "instanceof,interface,null,native,package,strictfp,super,synchronized," +
+        "throws,transient"];
+      var CSHARP_KEYWORDS = [COMMON_KEYWORDS,
+        "abstract,as,async,await,base,bool,by,byte,checked,decimal,delegate,descending," +
+        "dynamic,event,finally,fixed,foreach,from,group,implicit,in,interface," +
+        "internal,into,is,let,lock,null,object,out,override,orderby,params," +
+        "partial,readonly,ref,sbyte,sealed,stackalloc,string,select,uint,ulong," +
+        "unchecked,unsafe,ushort,var,virtual,where"];
+      var COFFEE_KEYWORDS = "all,and,by,catch,class,else,extends,false,finally," +
+        "for,if,in,is,isnt,loop,new,no,not,null,of,off,on,or,return,super,then," +
+        "throw,true,try,unless,until,when,while,yes";
+      var JSCRIPT_KEYWORDS = [COMMON_KEYWORDS,
+        "debugger,eval,export,function,get,instanceof,null,set,undefined," +
+        "var,with,Infinity,NaN"];
+      var PERL_KEYWORDS = "caller,delete,die,do,dump,elsif,eval,exit,foreach,for," +
+        "goto,if,import,last,local,my,next,no,our,print,package,redo,require," +
+        "sub,undef,unless,until,use,wantarray,while,BEGIN,END";
+      var PYTHON_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "and,as,assert,class,def,del," +
+      "elif,except,exec,finally,from,global,import,in,is,lambda," +
+      "nonlocal,not,or,pass,print,raise,try,with,yield," +
+      "False,True,None"];
+      var RUBY_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "alias,and,begin,case,class," +
+      "def,defined,elsif,end,ensure,false,in,module,next,nil,not,or,redo," +
+      "rescue,retry,self,super,then,true,undef,unless,until,when,yield," +
+      "BEGIN,END"];
+      var SH_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "case,done,elif,esac,eval,fi," +
+      "function,in,local,set,then,until"];
+      var ALL_KEYWORDS = [
+        CPP_KEYWORDS, CSHARP_KEYWORDS, JAVA_KEYWORDS, JSCRIPT_KEYWORDS,
+        PERL_KEYWORDS, PYTHON_KEYWORDS, RUBY_KEYWORDS, SH_KEYWORDS];
+      var C_TYPES = /^(DIR|FILE|vector|(de|priority_)?queue|list|stack|(const_)?iterator|(multi)?(set|map)|bitset|u?(int|float)\d*)\b/;
+
+      // token style names.  correspond to css classes
+      /**
+       * token style for a string literal
+       * @const
+       */
+      var PR_STRING = 'str';
+      /**
+       * token style for a keyword
+       * @const
+       */
+      var PR_KEYWORD = 'kwd';
+      /**
+       * token style for a comment
+       * @const
+       */
+      var PR_COMMENT = 'com';
+      /**
+       * token style for a type
+       * @const
+       */
+      var PR_TYPE = 'typ';
+      /**
+       * token style for a literal value.  e.g. 1, null, true.
+       * @const
+       */
+      var PR_LITERAL = 'lit';
+      /**
+       * token style for a punctuation string.
+       * @const
+       */
+      var PR_PUNCTUATION = 'pun';
+      /**
+       * token style for plain text.
+       * @const
+       */
+      var PR_PLAIN = 'pln';
+
+      /**
+       * token style for an sgml tag.
+       * @const
+       */
+      var PR_TAG = 'tag';
+      /**
+       * token style for a markup declaration such as a DOCTYPE.
+       * @const
+       */
+      var PR_DECLARATION = 'dec';
+      /**
+       * token style for embedded source.
+       * @const
+       */
+      var PR_SOURCE = 'src';
+      /**
+       * token style for an sgml attribute name.
+       * @const
+       */
+      var PR_ATTRIB_NAME = 'atn';
+      /**
+       * token style for an sgml attribute value.
+       * @const
+       */
+      var PR_ATTRIB_VALUE = 'atv';
+
+      /**
+       * A class that indicates a section of markup that is not code, e.g. to allow
+       * embedding of line numbers within code listings.
+       * @const
+       */
+      var PR_NOCODE = 'nocode';
+
+
+
+      /**
+       * A set of tokens that can precede a regular expression literal in
+       * javascript
+       * http://web.archive.org/web/20070717142515/http://www.mozilla.org/js/language/js20/rationale/syntax.html
+       * has the full list, but I've removed ones that might be problematic when
+       * seen in languages that don't support regular expression literals.
+       *
+       * <p>Specifically, I've removed any keywords that can't precede a regexp
+       * literal in a syntactically legal javascript program, and I've removed the
+       * "in" keyword since it's not a keyword in many languages, and might be used
+       * as a count of inches.
+       *
+       * <p>The link above does not accurately describe EcmaScript rules since
+       * it fails to distinguish between (a=++/b/i) and (a++/b/i) but it works
+       * very well in practice.
+       *
+       * @private
+       * @const
+       */
+      var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|[!=]=?=?|\\#|%=?|&&?=?|\\(|\\*=?|[+\\-]=|->|\\/=?|::?|<<?=?|>>?>?=?|,|;|\\?|@|\\[|~|{|\\^\\^?=?|\\|\\|?=?|break|case|continue|delete|do|else|finally|instanceof|return|throw|try|typeof)\\s*';
+
+      // CAVEAT: this does not properly handle the case where a regular
+      // expression immediately follows another since a regular expression may
+      // have flags for case-sensitivity and the like.  Having regexp tokens
+      // adjacent is not valid in any language I'm aware of, so I'm punting.
+      // TODO: maybe style special characters inside a regexp as punctuation.
+
+      /**
+       * Given a group of {@link RegExp}s, returns a {@code RegExp} that globally
+       * matches the union of the sets of strings matched by the input RegExp.
+       * Since it matches globally, if the input strings have a start-of-input
+       * anchor (/^.../), it is ignored for the purposes of unioning.
+       * @param {Array.<RegExp>} regexs non multiline, non-global regexs.
+       * @return {RegExp} a global regex.
+       */
+      function combinePrefixPatterns(regexs) {
+        var capturedGroupIndex = 0;
+
+        var needToFoldCase = false;
+        var ignoreCase = false;
+        for (var i = 0, n = regexs.length; i < n; ++i) {
+          var regex = regexs[i];
+          if (regex.ignoreCase) {
+            ignoreCase = true;
+          } else if (/[a-z]/i.test(regex.source.replace(
+              /\\u[0-9a-f]{4}|\\x[0-9a-f]{2}|\\[^ux]/gi, ''))) {
+            needToFoldCase = true;
+            ignoreCase = false;
+            break;
+          }
+        }
+
+        var escapeCharToCodeUnit = {
+          'b': 8,
+          't': 9,
+          'n': 0xa,
+          'v': 0xb,
+          'f': 0xc,
+          'r': 0xd
+        };
+
+        function decodeEscape(charsetPart) {
+          var cc0 = charsetPart.charCodeAt(0);
+          if (cc0 !== 92 /* \\ */) {
+            return cc0;
+          }
+          var c1 = charsetPart.charAt(1);
+          cc0 = escapeCharToCodeUnit[c1];
+          if (cc0) {
+            return cc0;
+          } else if ('0' <= c1 && c1 <= '7') {
+            return parseInt(charsetPart.substring(1), 8);
+          } else if (c1 === 'u' || c1 === 'x') {
+            return parseInt(charsetPart.substring(2), 16);
+          } else {
+            return charsetPart.charCodeAt(1);
+          }
+        }
+
+        function encodeEscape(charCode) {
+          if (charCode < 0x20) {
+            return (charCode < 0x10 ? '\\x0' : '\\x') + charCode.toString(16);
+          }
+          var ch = String.fromCharCode(charCode);
+          return (ch === '\\' || ch === '-' || ch === ']' || ch === '^')
+            ? "\\" + ch : ch;
+        }
+
+        function caseFoldCharset(charSet) {
+          var charsetParts = charSet.substring(1, charSet.length - 1).match(
+            new RegExp(
+              '\\\\u[0-9A-Fa-f]{4}'
+              + '|\\\\x[0-9A-Fa-f]{2}'
+              + '|\\\\[0-3][0-7]{0,2}'
+              + '|\\\\[0-7]{1,2}'
+              + '|\\\\[\\s\\S]'
+              + '|-'
+              + '|[^-\\\\]',
+              'g'));
+          var ranges = [];
+          var inverse = charsetParts[0] === '^';
+
+          var out = ['['];
+          if (inverse) { out.push('^'); }
+
+          for (var i = inverse ? 1 : 0, n = charsetParts.length; i < n; ++i) {
+            var p = charsetParts[i];
+            if (/\\[bdsw]/i.test(p)) {  // Don't muck with named groups.
+              out.push(p);
+            } else {
+              var start = decodeEscape(p);
+              var end;
+              if (i + 2 < n && '-' === charsetParts[i + 1]) {
+                end = decodeEscape(charsetParts[i + 2]);
+                i += 2;
+              } else {
+                end = start;
+              }
+              ranges.push([start, end]);
+              // If the range might intersect letters, then expand it.
+              // This case handling is too simplistic.
+              // It does not deal with non-latin case folding.
+              // It works for latin source code identifiers though.
+              if (!(end < 65 || start > 122)) {
+                if (!(end < 65 || start > 90)) {
+                  ranges.push([Math.max(65, start) | 32, Math.min(end, 90) | 32]);
+                }
+                if (!(end < 97 || start > 122)) {
+                  ranges.push([Math.max(97, start) & ~32, Math.min(end, 122) & ~32]);
+                }
+              }
+            }
+          }
+
+          // [[1, 10], [3, 4], [8, 12], [14, 14], [16, 16], [17, 17]]
+          // -> [[1, 12], [14, 14], [16, 17]]
+          ranges.sort(function (a, b) { return (a[0] - b[0]) || (b[1]  - a[1]); });
+          var consolidatedRanges = [];
+          var lastRange = [];
+          for (var i = 0; i < ranges.length; ++i) {
+            var range = ranges[i];
+            if (range[0] <= lastRange[1] + 1) {
+              lastRange[1] = Math.max(lastRange[1], range[1]);
+            } else {
+              consolidatedRanges.push(lastRange = range);
+            }
+          }
+
+          for (var i = 0; i < consolidatedRanges.length; ++i) {
+            var range = consolidatedRanges[i];
+            out.push(encodeEscape(range[0]));
+            if (range[1] > range[0]) {
+              if (range[1] + 1 > range[0]) { out.push('-'); }
+              out.push(encodeEscape(range[1]));
+            }
+          }
+          out.push(']');
+          return out.join('');
+        }
+
+        function allowAnywhereFoldCaseAndRenumberGroups(regex) {
+          // Split into character sets, escape sequences, punctuation strings
+          // like ('(', '(?:', ')', '^'), and runs of characters that do not
+          // include any of the above.
+          var parts = regex.source.match(
+            new RegExp(
+              '(?:'
+              + '\\[(?:[^\\x5C\\x5D]|\\\\[\\s\\S])*\\]'  // a character set
+              + '|\\\\u[A-Fa-f0-9]{4}'  // a unicode escape
+              + '|\\\\x[A-Fa-f0-9]{2}'  // a hex escape
+              + '|\\\\[0-9]+'  // a back-reference or octal escape
+              + '|\\\\[^ux0-9]'  // other escape sequence
+              + '|\\(\\?[:!=]'  // start of a non-capturing group
+              + '|[\\(\\)\\^]'  // start/end of a group, or line start
+              + '|[^\\x5B\\x5C\\(\\)\\^]+'  // run of other characters
+              + ')',
+              'g'));
+          var n = parts.length;
+
+          // Maps captured group numbers to the number they will occupy in
+          // the output or to -1 if that has not been determined, or to
+          // undefined if they need not be capturing in the output.
+          var capturedGroups = [];
+
+          // Walk over and identify back references to build the capturedGroups
+          // mapping.
+          for (var i = 0, groupIndex = 0; i < n; ++i) {
+            var p = parts[i];
+            if (p === '(') {
+              // groups are 1-indexed, so max group index is count of '('
+              ++groupIndex;
+            } else if ('\\' === p.charAt(0)) {
+              var decimalValue = +p.substring(1);
+              if (decimalValue) {
+                if (decimalValue <= groupIndex) {
+                  capturedGroups[decimalValue] = -1;
+                } else {
+                  // Replace with an unambiguous escape sequence so that
+                  // an octal escape sequence does not turn into a backreference
+                  // to a capturing group from an earlier regex.
+                  parts[i] = encodeEscape(decimalValue);
+                }
+              }
+            }
+          }
+
+          // Renumber groups and reduce capturing groups to non-capturing groups
+          // where possible.
+          for (var i = 1; i < capturedGroups.length; ++i) {
+            if (-1 === capturedGroups[i]) {
+              capturedGroups[i] = ++capturedGroupIndex;
+            }
+          }
+          for (var i = 0, groupIndex = 0; i < n; ++i) {
+            var p = parts[i];
+            if (p === '(') {
+              ++groupIndex;
+              if (!capturedGroups[groupIndex]) {
+                parts[i] = '(?:';
+              }
+            } else if ('\\' === p.charAt(0)) {
+              var decimalValue = +p.substring(1);
+              if (decimalValue && decimalValue <= groupIndex) {
+                parts[i] = '\\' + capturedGroups[decimalValue];
+              }
+            }
+          }
+
+          // Remove any prefix anchors so that the output will match anywhere.
+          // ^^ really does mean an anchored match though.
+          for (var i = 0; i < n; ++i) {
+            if ('^' === parts[i] && '^' !== parts[i + 1]) { parts[i] = ''; }
+          }
+
+          // Expand letters to groups to handle mixing of case-sensitive and
+          // case-insensitive patterns if necessary.
+          if (regex.ignoreCase && needToFoldCase) {
+            for (var i = 0; i < n; ++i) {
+              var p = parts[i];
+              var ch0 = p.charAt(0);
+              if (p.length >= 2 && ch0 === '[') {
+                parts[i] = caseFoldCharset(p);
+              } else if (ch0 !== '\\') {
+                // TODO: handle letters in numeric escapes.
+                parts[i] = p.replace(
+                  /[a-zA-Z]/g,
+                  function (ch) {
+                    var cc = ch.charCodeAt(0);
+                    return '[' + String.fromCharCode(cc & ~32, cc | 32) + ']';
+                  });
+              }
+            }
+          }
+
+          return parts.join('');
+        }
+
+        var rewritten = [];
+        for (var i = 0, n = regexs.length; i < n; ++i) {
+          var regex = regexs[i];
+          if (regex.global || regex.multiline) { throw new Error('' + regex); }
+          rewritten.push(
+            '(?:' + allowAnywhereFoldCaseAndRenumberGroups(regex) + ')');
+        }
+
+        return new RegExp(rewritten.join('|'), ignoreCase ? 'gi' : 'g');
+      }
+
+      /**
+       * Split markup into a string of source code and an array mapping ranges in
+       * that string to the text nodes in which they appear.
+       *
+       * <p>
+       * The HTML DOM structure:</p>
+       * <pre>
+       * (Element   "p"
+       *   (Element "b"
+       *     (Text  "print "))       ; #1
+       *   (Text    "'Hello '")      ; #2
+       *   (Element "br")            ; #3
+       *   (Text    "  + 'World';")) ; #4
+       * </pre>
+       * <p>
+       * corresponds to the HTML
+       * {@code <p><b>print </b>'Hello '<br>  + 'World';</p>}.</p>
+       *
+       * <p>
+       * It will produce the output:</p>
+       * <pre>
+       * {
+       *   sourceCode: "print 'Hello '\n  + 'World';",
+       *   //                     1          2
+       *   //           012345678901234 5678901234567
+       *   spans: [0, #1, 6, #2, 14, #3, 15, #4]
+       * }
+       * </pre>
+       * <p>
+       * where #1 is a reference to the {@code "print "} text node above, and so
+       * on for the other text nodes.
+       * </p>
+       *
+       * <p>
+       * The {@code} spans array is an array of pairs.  Even elements are the start
+       * indices of substrings, and odd elements are the text nodes (or BR elements)
+       * that contain the text for those substrings.
+       * Substrings continue until the next index or the end of the source.
+       * </p>
+       *
+       * @param {Node} node an HTML DOM subtree containing source-code.
+       * @param {boolean|number} isPreformatted truthy if white-space in
+       *    text nodes should be considered significant.
+       * @return {SourceSpansT} source code and the nodes in which they occur.
+       */
+      function extractSourceSpans(node, isPreformatted) {
+        var nocode = /(?:^|\s)nocode(?:\s|$)/;
+
+        var chunks = [];
+        var length = 0;
+        var spans = [];
+        var k = 0;
+
+        function walk(node) {
+          var type = node.nodeType;
+          if (type == 1) {  // Element
+            if (nocode.test(node.className)) { return; }
+            for (var child = node.firstChild; child; child = child.nextSibling) {
+              walk(child);
+            }
+            var nodeName = node.nodeName.toLowerCase();
+            if ('br' === nodeName || 'li' === nodeName) {
+              chunks[k] = '\n';
+              spans[k << 1] = length++;
+              spans[(k++ << 1) | 1] = node;
+            }
+          } else if (type == 3 || type == 4) {  // Text
+            var text = node.nodeValue;
+            if (text.length) {
+              if (!isPreformatted) {
+                text = text.replace(/[ \t\r\n]+/g, ' ');
+              } else {
+                text = text.replace(/\r\n?/g, '\n');  // Normalize newlines.
+              }
+              // TODO: handle tabs here?
+              chunks[k] = text;
+              spans[k << 1] = length;
+              length += text.length;
+              spans[(k++ << 1) | 1] = node;
+            }
+          }
+        }
+
+        walk(node);
+
+        return {
+          sourceCode: chunks.join('').replace(/\n$/, ''),
+          spans: spans
+        };
+      }
+
+      /**
+       * Apply the given language handler to sourceCode and add the resulting
+       * decorations to out.
+       * @param {!Element} sourceNode
+       * @param {number} basePos the index of sourceCode within the chunk of source
+       *    whose decorations are already present on out.
+       * @param {string} sourceCode
+       * @param {function(JobT)} langHandler
+       * @param {DecorationsT} out
+       */
+      function appendDecorations(
+        sourceNode, basePos, sourceCode, langHandler, out) {
+        if (!sourceCode) { return; }
+        /** @type {JobT} */
+        var job = {
+          sourceNode: sourceNode,
+          pre: 1,
+          langExtension: null,
+          numberLines: null,
+          sourceCode: sourceCode,
+          spans: null,
+          basePos: basePos,
+          decorations: null
+        };
+        langHandler(job);
+        out.push.apply(out, job.decorations);
+      }
+
+      var notWs = /\S/;
+
+      /**
+       * Given an element, if it contains only one child element and any text nodes
+       * it contains contain only space characters, return the sole child element.
+       * Otherwise returns undefined.
+       * <p>
+       * This is meant to return the CODE element in {@code <pre><code ...>} when
+       * there is a single child element that contains all the non-space textual
+       * content, but not to return anything where there are multiple child elements
+       * as in {@code <pre><code>...</code><code>...</code></pre>} or when there
+       * is textual content.
+       */
+      function childContentWrapper(element) {
+        var wrapper = undefined;
+        for (var c = element.firstChild; c; c = c.nextSibling) {
+          var type = c.nodeType;
+          wrapper = (type === 1)  // Element Node
+            ? (wrapper ? element : c)
+            : (type === 3)  // Text Node
+            ? (notWs.test(c.nodeValue) ? element : wrapper)
+            : wrapper;
+        }
+        return wrapper === element ? undefined : wrapper;
+      }
+
+      /** Given triples of [style, pattern, context] returns a lexing function,
+       * The lexing function interprets the patterns to find token boundaries and
+       * returns a decoration list of the form
+       * [index_0, style_0, index_1, style_1, ..., index_n, style_n]
+       * where index_n is an index into the sourceCode, and style_n is a style
+       * constant like PR_PLAIN.  index_n-1 <= index_n, and style_n-1 applies to
+       * all characters in sourceCode[index_n-1:index_n].
+       *
+       * The stylePatterns is a list whose elements have the form
+       * [style : string, pattern : RegExp, DEPRECATED, shortcut : string].
+       *
+       * Style is a style constant like PR_PLAIN, or can be a string of the
+       * form 'lang-FOO', where FOO is a language extension describing the
+       * language of the portion of the token in $1 after pattern executes.
+       * E.g., if style is 'lang-lisp', and group 1 contains the text
+       * '(hello (world))', then that portion of the token will be passed to the
+       * registered lisp handler for formatting.
+       * The text before and after group 1 will be restyled using this decorator
+       * so decorators should take care that this doesn't result in infinite
+       * recursion.  For example, the HTML lexer rule for SCRIPT elements looks
+       * something like ['lang-js', /<[s]cript>(.+?)<\/script>/].  This may match
+       * '<script>foo()<\/script>', which would cause the current decorator to
+       * be called with '<script>' which would not match the same rule since
+       * group 1 must not be empty, so it would be instead styled as PR_TAG by
+       * the generic tag rule.  The handler registered for the 'js' extension would
+       * then be called with 'foo()', and finally, the current decorator would
+       * be called with '<\/script>' which would not match the original rule and
+       * so the generic tag rule would identify it as a tag.
+       *
+       * Pattern must only match prefixes, and if it matches a prefix, then that
+       * match is considered a token with the same style.
+       *
+       * Context is applied to the last non-whitespace, non-comment token
+       * recognized.
+       *
+       * Shortcut is an optional string of characters, any of which, if the first
+       * character, gurantee that this pattern and only this pattern matches.
+       *
+       * @param {Array} shortcutStylePatterns patterns that always start with
+       *   a known character.  Must have a shortcut string.
+       * @param {Array} fallthroughStylePatterns patterns that will be tried in
+       *   order if the shortcut ones fail.  May have shortcuts.
+       *
+       * @return {function (JobT)} a function that takes an undecorated job and
+       *   attaches a list of decorations.
+       */
+      function createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns) {
+        var shortcuts = {};
+        var tokenizer;
+        (function () {
+          var allPatterns = shortcutStylePatterns.concat(fallthroughStylePatterns);
+          var allRegexs = [];
+          var regexKeys = {};
+          for (var i = 0, n = allPatterns.length; i < n; ++i) {
+            var patternParts = allPatterns[i];
+            var shortcutChars = patternParts[3];
+            if (shortcutChars) {
+              for (var c = shortcutChars.length; --c >= 0;) {
+                shortcuts[shortcutChars.charAt(c)] = patternParts;
+              }
+            }
+            var regex = patternParts[1];
+            var k = '' + regex;
+            if (!regexKeys.hasOwnProperty(k)) {
+              allRegexs.push(regex);
+              regexKeys[k] = null;
+            }
+          }
+          allRegexs.push(/[\0-\uffff]/);
+          tokenizer = combinePrefixPatterns(allRegexs);
+        })();
+
+        var nPatterns = fallthroughStylePatterns.length;
+
+        /**
+         * Lexes job.sourceCode and attaches an output array job.decorations of
+         * style classes preceded by the position at which they start in
+         * job.sourceCode in order.
+         *
+         * @type{function (JobT)}
+         */
+        var decorate = function (job) {
+          var sourceCode = job.sourceCode, basePos = job.basePos;
+          var sourceNode = job.sourceNode;
+          /** Even entries are positions in source in ascending order.  Odd enties
+           * are style markers (e.g., PR_COMMENT) that run from that position until
+           * the end.
+           * @type {DecorationsT}
+           */
+          var decorations = [basePos, PR_PLAIN];
+          var pos = 0;  // index into sourceCode
+          var tokens = sourceCode.match(tokenizer) || [];
+          var styleCache = {};
+
+          for (var ti = 0, nTokens = tokens.length; ti < nTokens; ++ti) {
+            var token = tokens[ti];
+            var style = styleCache[token];
+            var match = void 0;
+
+            var isEmbedded;
+            if (typeof style === 'string') {
+              isEmbedded = false;
+            } else {
+              var patternParts = shortcuts[token.charAt(0)];
+              if (patternParts) {
+                match = token.match(patternParts[1]);
+                style = patternParts[0];
+              } else {
+                for (var i = 0; i < nPatterns; ++i) {
+                  patternParts = fallthroughStylePatterns[i];
+                  match = token.match(patternParts[1]);
+                  if (match) {
+                    style = patternParts[0];
+                    break;
+                  }
+                }
+
+                if (!match) {  // make sure that we make progress
+                  style = PR_PLAIN;
+                }
+              }
+
+              isEmbedded = style.length >= 5 && 'lang-' === style.substring(0, 5);
+              if (isEmbedded && !(match && typeof match[1] === 'string')) {
+                isEmbedded = false;
+                style = PR_SOURCE;
+              }
+
+              if (!isEmbedded) { styleCache[token] = style; }
+            }
+
+            var tokenStart = pos;
+            pos += token.length;
+
+            if (!isEmbedded) {
+              decorations.push(basePos + tokenStart, style);
+            } else {  // Treat group 1 as an embedded block of source code.
+              var embeddedSource = match[1];
+              var embeddedSourceStart = token.indexOf(embeddedSource);
+              var embeddedSourceEnd = embeddedSourceStart + embeddedSource.length;
+              if (match[2]) {
+                // If embeddedSource can be blank, then it would match at the
+                // beginning which would cause us to infinitely recurse on the
+                // entire token, so we catch the right context in match[2].
+                embeddedSourceEnd = token.length - match[2].length;
+                embeddedSourceStart = embeddedSourceEnd - embeddedSource.length;
+              }
+              var lang = style.substring(5);
+              // Decorate the left of the embedded source
+              appendDecorations(
+                sourceNode,
+                basePos + tokenStart,
+                token.substring(0, embeddedSourceStart),
+                decorate, decorations);
+              // Decorate the embedded source
+              appendDecorations(
+                sourceNode,
+                basePos + tokenStart + embeddedSourceStart,
+                embeddedSource,
+                langHandlerForExtension(lang, embeddedSource),
+                decorations);
+              // Decorate the right of the embedded section
+              appendDecorations(
+                sourceNode,
+                basePos + tokenStart + embeddedSourceEnd,
+                token.substring(embeddedSourceEnd),
+                decorate, decorations);
+            }
+          }
+          job.decorations = decorations;
+        };
+        return decorate;
+      }
+
+      /** returns a function that produces a list of decorations from source text.
+       *
+       * This code treats ", ', and ` as string delimiters, and \ as a string
+       * escape.  It does not recognize perl's qq() style strings.
+       * It has no special handling for double delimiter escapes as in basic, or
+       * the tripled delimiters used in python, but should work on those regardless
+       * although in those cases a single string literal may be broken up into
+       * multiple adjacent string literals.
+       *
+       * It recognizes C, C++, and shell style comments.
+       *
+       * @param {Object} options a set of optional parameters.
+       * @return {function (JobT)} a function that examines the source code
+       *     in the input job and builds a decoration list which it attaches to
+       *     the job.
+       */
+      function sourceDecorator(options) {
+        var shortcutStylePatterns = [], fallthroughStylePatterns = [];
+        if (options['tripleQuotedStrings']) {
+          // '''multi-line-string''', 'single-line-string', and double-quoted
+          shortcutStylePatterns.push(
+            [PR_STRING,  /^(?:\'\'\'(?:[^\'\\]|\\[\s\S]|\'{1,2}(?=[^\']))*(?:\'\'\'|$)|\"\"\"(?:[^\"\\]|\\[\s\S]|\"{1,2}(?=[^\"]))*(?:\"\"\"|$)|\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$))/,
+              null, '\'"']);
+        } else if (options['multiLineStrings']) {
+          // 'multi-line-string', "multi-line-string"
+          shortcutStylePatterns.push(
+            [PR_STRING,  /^(?:\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$)|\`(?:[^\\\`]|\\[\s\S])*(?:\`|$))/,
+              null, '\'"`']);
+        } else {
+          // 'single-line-string', "single-line-string"
+          shortcutStylePatterns.push(
+            [PR_STRING,
+              /^(?:\'(?:[^\\\'\r\n]|\\.)*(?:\'|$)|\"(?:[^\\\"\r\n]|\\.)*(?:\"|$))/,
+              null, '"\'']);
+        }
+        if (options['verbatimStrings']) {
+          // verbatim-string-literal production from the C# grammar.  See issue 93.
+          fallthroughStylePatterns.push(
+            [PR_STRING, /^@\"(?:[^\"]|\"\")*(?:\"|$)/, null]);
+        }
+        var hc = options['hashComments'];
+        if (hc) {
+          if (options['cStyleComments']) {
+            if (hc > 1) {  // multiline hash comments
+              shortcutStylePatterns.push(
+                [PR_COMMENT, /^#(?:##(?:[^#]|#(?!##))*(?:###|$)|.*)/, null, '#']);
+            } else {
+              // Stop C preprocessor declarations at an unclosed open comment
+              shortcutStylePatterns.push(
+                [PR_COMMENT, /^#(?:(?:define|e(?:l|nd)if|else|error|ifn?def|include|line|pragma|undef|warning)\b|[^\r\n]*)/,
+                  null, '#']);
+            }
+            // #include <stdio.h>
+            fallthroughStylePatterns.push(
+              [PR_STRING,
+                /^<(?:(?:(?:\.\.\/)*|\/?)(?:[\w-]+(?:\/[\w-]+)+)?[\w-]+\.h(?:h|pp|\+\+)?|[a-z]\w*)>/,
+                null]);
+          } else {
+            shortcutStylePatterns.push([PR_COMMENT, /^#[^\r\n]*/, null, '#']);
+          }
+        }
+        if (options['cStyleComments']) {
+          fallthroughStylePatterns.push([PR_COMMENT, /^\/\/[^\r\n]*/, null]);
+          fallthroughStylePatterns.push(
+            [PR_COMMENT, /^\/\*[\s\S]*?(?:\*\/|$)/, null]);
+        }
+        var regexLiterals = options['regexLiterals'];
+        if (regexLiterals) {
+          /**
+           * @const
+           */
+          var regexExcls = regexLiterals > 1
+            ? ''  // Multiline regex literals
+            : '\n\r';
+          /**
+           * @const
+           */
+          var regexAny = regexExcls ? '.' : '[\\S\\s]';
+          /**
+           * @const
+           */
+          var REGEX_LITERAL = (
+            // A regular expression literal starts with a slash that is
+            // not followed by * or / so that it is not confused with
+            // comments.
+          '/(?=[^/*' + regexExcls + '])'
+          // and then contains any number of raw characters,
+          + '(?:[^/\\x5B\\x5C' + regexExcls + ']'
+          // escape sequences (\x5C),
+          +    '|\\x5C' + regexAny
+          // or non-nesting character sets (\x5B\x5D);
+          +    '|\\x5B(?:[^\\x5C\\x5D' + regexExcls + ']'
+          +             '|\\x5C' + regexAny + ')*(?:\\x5D|$))+'
+          // finally closed by a /.
+          + '/');
+          fallthroughStylePatterns.push(
+            ['lang-regex',
+              RegExp('^' + REGEXP_PRECEDER_PATTERN + '(' + REGEX_LITERAL + ')')
+            ]);
+        }
+
+        var types = options['types'];
+        if (types) {
+          fallthroughStylePatterns.push([PR_TYPE, types]);
+        }
+
+        var keywords = ("" + options['keywords']).replace(/^ | $/g, '');
+        if (keywords.length) {
+          fallthroughStylePatterns.push(
+            [PR_KEYWORD,
+              new RegExp('^(?:' + keywords.replace(/[\s,]+/g, '|') + ')\\b'),
+              null]);
+        }
+
+        shortcutStylePatterns.push([PR_PLAIN,       /^\s+/, null, ' \r\n\t\xA0']);
+
+        var punctuation =
+          // The Bash man page says
+
+          // A word is a sequence of characters considered as a single
+          // unit by GRUB. Words are separated by metacharacters,
+          // which are the following plus space, tab, and newline: { }
+          // | & $ ; < >
+          // ...
+
+          // A word beginning with # causes that word and all remaining
+          // characters on that line to be ignored.
+
+          // which means that only a '#' after /(?:^|[{}|&$;<>\s])/ starts a
+          // comment but empirically
+          // $ echo {#}
+          // {#}
+          // $ echo \$#
+          // $#
+          // $ echo }#
+          // }#
+
+          // so /(?:^|[|&;<>\s])/ is more appropriate.
+
+          // http://gcc.gnu.org/onlinedocs/gcc-2.95.3/cpp_1.html#SEC3
+          // suggests that this definition is compatible with a
+          // default mode that tries to use a single token definition
+          // to recognize both bash/python style comments and C
+          // preprocessor directives.
+
+          // This definition of punctuation does not include # in the list of
+          // follow-on exclusions, so # will not be broken before if preceeded
+          // by a punctuation character.  We could try to exclude # after
+          // [|&;<>] but that doesn't seem to cause many major problems.
+          // If that does turn out to be a problem, we should change the below
+          // when hc is truthy to include # in the run of punctuation characters
+          // only when not followint [|&;<>].
+          '^.[^\\s\\w.$@\'"`/\\\\]*';
+        if (options['regexLiterals']) {
+          punctuation += '(?!\s*\/)';
+        }
+
+        fallthroughStylePatterns.push(
+          // TODO(mikesamuel): recognize non-latin letters and numerals in idents
+          [PR_LITERAL,     /^@[a-z_$][a-z_$@0-9]*/i, null],
+          [PR_TYPE,        /^(?:[@_]?[A-Z]+[a-z][A-Za-z_$@0-9]*|\w+_t\b)/, null],
+          [PR_PLAIN,       /^[a-z_$][a-z_$@0-9]*/i, null],
+          [PR_LITERAL,
+            new RegExp(
+              '^(?:'
+              // A hex number
+              + '0x[a-f0-9]+'
+              // or an octal or decimal number,
+              + '|(?:\\d(?:_\\d+)*\\d*(?:\\.\\d*)?|\\.\\d\\+)'
+              // possibly in scientific notation
+              + '(?:e[+\\-]?\\d+)?'
+              + ')'
+              // with an optional modifier like UL for unsigned long
+              + '[a-z]*', 'i'),
+            null, '0123456789'],
+          // Don't treat escaped quotes in bash as starting strings.
+          // See issue 144.
+          [PR_PLAIN,       /^\\[\s\S]?/, null],
+          [PR_PUNCTUATION, new RegExp(punctuation), null]);
+
+        return createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns);
+      }
+
+      var decorateSource = sourceDecorator({
+        'keywords': ALL_KEYWORDS,
+        'hashComments': true,
+        'cStyleComments': true,
+        'multiLineStrings': true,
+        'regexLiterals': true
+      });
+
+      /**
+       * Given a DOM subtree, wraps it in a list, and puts each line into its own
+       * list item.
+       *
+       * @param {Node} node modified in place.  Its content is pulled into an
+       *     HTMLOListElement, and each line is moved into a separate list item.
+       *     This requires cloning elements, so the input might not have unique
+       *     IDs after numbering.
+       * @param {number|null|boolean} startLineNum
+       *     If truthy, coerced to an integer which is the 1-indexed line number
+       *     of the first line of code.  The number of the first line will be
+       *     attached to the list.
+       * @param {boolean} isPreformatted true iff white-space in text nodes should
+       *     be treated as significant.
+       */
+      function numberLines(node, startLineNum, isPreformatted) {
+        var nocode = /(?:^|\s)nocode(?:\s|$)/;
+        var lineBreak = /\r\n?|\n/;
+
+        var document = node.ownerDocument;
+
+        var li = document.createElement('li');
+        while (node.firstChild) {
+          li.appendChild(node.firstChild);
+        }
+        // An array of lines.  We split below, so this is initialized to one
+        // un-split line.
+        var listItems = [li];
+
+        function walk(node) {
+          var type = node.nodeType;
+          if (type == 1 && !nocode.test(node.className)) {  // Element
+            if ('br' === node.nodeName) {
+              breakAfter(node);
+              // Discard the <BR> since it is now flush against a </LI>.
+              if (node.parentNode) {
+                node.parentNode.removeChild(node);
+              }
+            } else {
+              for (var child = node.firstChild; child; child = child.nextSibling) {
+                walk(child);
+              }
+            }
+          } else if ((type == 3 || type == 4) && isPreformatted) {  // Text
+            var text = node.nodeValue;
+            var match = text.match(lineBreak);
+            if (match) {
+              var firstLine = text.substring(0, match.index);
+              node.nodeValue = firstLine;
+              var tail = text.substring(match.index + match[0].length);
+              if (tail) {
+                var parent = node.parentNode;
+                parent.insertBefore(
+                  document.createTextNode(tail), node.nextSibling);
+              }
+              breakAfter(node);
+              if (!firstLine) {
+                // Don't leave blank text nodes in the DOM.
+                node.parentNode.removeChild(node);
+              }
+            }
+          }
+        }
+
+        // Split a line after the given node.
+        function breakAfter(lineEndNode) {
+          // If there's nothing to the right, then we can skip ending the line
+          // here, and move root-wards since splitting just before an end-tag
+          // would require us to create a bunch of empty copies.
+          while (!lineEndNode.nextSibling) {
+            lineEndNode = lineEndNode.parentNode;
+            if (!lineEndNode) { return; }
+          }
+
+          function breakLeftOf(limit, copy) {
+            // Clone shallowly if this node needs to be on both sides of the break.
+            var rightSide = copy ? limit.cloneNode(false) : limit;
+            var parent = limit.parentNode;
+            if (parent) {
+              // We clone the parent chain.
+              // This helps us resurrect important styling elements that cross lines.
+              // E.g. in <i>Foo<br>Bar</i>
+              // should be rewritten to <li><i>Foo</i></li><li><i>Bar</i></li>.
+              var parentClone = breakLeftOf(parent, 1);
+              // Move the clone and everything to the right of the original
+              // onto the cloned parent.
+              var next = limit.nextSibling;
+              parentClone.appendChild(rightSide);
+              for (var sibling = next; sibling; sibling = next) {
+                next = sibling.nextSibling;
+                parentClone.appendChild(sibling);
+              }
+            }
+            return rightSide;
+          }
+
+          var copiedListItem = breakLeftOf(lineEndNode.nextSibling, 0);
+
+          // Walk the parent chain until we reach an unattached LI.
+          for (var parent;
+            // Check nodeType since IE invents document fragments.
+               (parent = copiedListItem.parentNode) && parent.nodeType === 1;) {
+            copiedListItem = parent;
+          }
+          // Put it on the list of lines for later processing.
+          listItems.push(copiedListItem);
+        }
+
+        // Split lines while there are lines left to split.
+        for (var i = 0;  // Number of lines that have been split so far.
+             i < listItems.length;  // length updated by breakAfter calls.
+             ++i) {
+          walk(listItems[i]);
+        }
+
+        // Make sure numeric indices show correctly.
+        if (startLineNum === (startLineNum|0)) {
+          listItems[0].setAttribute('value', startLineNum);
+        }
+
+        var ol = document.createElement('ol');
+        ol.className = 'linenums';
+        var offset = Math.max(0, ((startLineNum - 1 /* zero index */)) | 0) || 0;
+        for (var i = 0, n = listItems.length; i < n; ++i) {
+          li = listItems[i];
+          // Stick a class on the LIs so that stylesheets can
+          // color odd/even rows, or any other row pattern that
+          // is co-prime with 10.
+          li.className = 'L' + ((i + offset) % 10);
+          if (!li.firstChild) {
+            li.appendChild(document.createTextNode('\xA0'));
+          }
+          ol.appendChild(li);
+        }
+
+        node.appendChild(ol);
+      }
+
+      /**
+       * Breaks {@code job.sourceCode} around style boundaries in
+       * {@code job.decorations} and modifies {@code job.sourceNode} in place.
+       * @param {JobT} job
+       * @private
+       */
+      function recombineTagsAndDecorations(job) {
+        var isIE8OrEarlier = /\bMSIE\s(\d+)/.exec(navigator.userAgent);
+        isIE8OrEarlier = isIE8OrEarlier && +isIE8OrEarlier[1] <= 8;
+        var newlineRe = /\n/g;
+
+        var source = job.sourceCode;
+        var sourceLength = source.length;
+        // Index into source after the last code-unit recombined.
+        var sourceIndex = 0;
+
+        var spans = job.spans;
+        var nSpans = spans.length;
+        // Index into spans after the last span which ends at or before sourceIndex.
+        var spanIndex = 0;
+
+        var decorations = job.decorations;
+        var nDecorations = decorations.length;
+        // Index into decorations after the last decoration which ends at or before
+        // sourceIndex.
+        var decorationIndex = 0;
+
+        // Remove all zero-length decorations.
+        decorations[nDecorations] = sourceLength;
+        var decPos, i;
+        for (i = decPos = 0; i < nDecorations;) {
+          if (decorations[i] !== decorations[i + 2]) {
+            decorations[decPos++] = decorations[i++];
+            decorations[decPos++] = decorations[i++];
+          } else {
+            i += 2;
+          }
+        }
+        nDecorations = decPos;
+
+        // Simplify decorations.
+        for (i = decPos = 0; i < nDecorations;) {
+          var startPos = decorations[i];
+          // Conflate all adjacent decorations that use the same style.
+          var startDec = decorations[i + 1];
+          var end = i + 2;
+          while (end + 2 <= nDecorations && decorations[end + 1] === startDec) {
+            end += 2;
+          }
+          decorations[decPos++] = startPos;
+          decorations[decPos++] = startDec;
+          i = end;
+        }
+
+        nDecorations = decorations.length = decPos;
+
+        var sourceNode = job.sourceNode;
+        var oldDisplay = "";
+        if (sourceNode) {
+          oldDisplay = sourceNode.style.display;
+          sourceNode.style.display = 'none';
+        }
+        try {
+          var decoration = null;
+          while (spanIndex < nSpans) {
+            var spanStart = spans[spanIndex];
+            var spanEnd = /** @type{number} */ (spans[spanIndex + 2])
+              || sourceLength;
+
+            var decEnd = decorations[decorationIndex + 2] || sourceLength;
+
+            var end = Math.min(spanEnd, decEnd);
+
+            var textNode = /** @type{Node} */ (spans[spanIndex + 1]);
+            var styledText;
+            if (textNode.nodeType !== 1  // Don't muck with <BR>s or <LI>s
+              // Don't introduce spans around empty text nodes.
+              && (styledText = source.substring(sourceIndex, end))) {
+              // This may seem bizarre, and it is.  Emitting LF on IE causes the
+              // code to display with spaces instead of line breaks.
+              // Emitting Windows standard issue linebreaks (CRLF) causes a blank
+              // space to appear at the beginning of every line but the first.
+              // Emitting an old Mac OS 9 line separator makes everything spiffy.
+              if (isIE8OrEarlier) {
+                styledText = styledText.replace(newlineRe, '\r');
+              }
+              textNode.nodeValue = styledText;
+              var document = textNode.ownerDocument;
+              var span = document.createElement('span');
+              span.className = decorations[decorationIndex + 1];
+              var parentNode = textNode.parentNode;
+              parentNode.replaceChild(span, textNode);
+              span.appendChild(textNode);
+              if (sourceIndex < spanEnd) {  // Split off a text node.
+                spans[spanIndex + 1] = textNode
+                  // TODO: Possibly optimize by using '' if there's no flicker.
+                  = document.createTextNode(source.substring(end, spanEnd));
+                parentNode.insertBefore(textNode, span.nextSibling);
+              }
+            }
+
+            sourceIndex = end;
+
+            if (sourceIndex >= spanEnd) {
+              spanIndex += 2;
+            }
+            if (sourceIndex >= decEnd) {
+              decorationIndex += 2;
+            }
+          }
+        } finally {
+          if (sourceNode) {
+            sourceNode.style.display = oldDisplay;
+          }
+        }
+      }
+
+      /** Maps language-specific file extensions to handlers. */
+      var langHandlerRegistry = {};
+      /** Register a language handler for the given file extensions.
+       * @param {function (JobT)} handler a function from source code to a list
+       *      of decorations.  Takes a single argument job which describes the
+       *      state of the computation and attaches the decorations to it.
+       * @param {Array.<string>} fileExtensions
+       */
+      function registerLangHandler(handler, fileExtensions) {
+        for (var i = fileExtensions.length; --i >= 0;) {
+          var ext = fileExtensions[i];
+          if (!langHandlerRegistry.hasOwnProperty(ext)) {
+            langHandlerRegistry[ext] = handler;
+          } else if (win['console']) {
+            console['warn']('cannot override language handler %s', ext);
+          }
+        }
+      }
+      function langHandlerForExtension(extension, source) {
+        if (!(extension && langHandlerRegistry.hasOwnProperty(extension))) {
+          // Treat it as markup if the first non whitespace character is a < and
+          // the last non-whitespace character is a >.
+          extension = /^\s*</.test(source)
+            ? 'default-markup'
+            : 'default-code';
+        }
+        return langHandlerRegistry[extension];
+      }
+      registerLangHandler(decorateSource, ['default-code']);
+      registerLangHandler(
+        createSimpleLexer(
+          [],
+          [
+            [PR_PLAIN,       /^[^<?]+/],
+            [PR_DECLARATION, /^<!\w[^>]*(?:>|$)/],
+            [PR_COMMENT,     /^<\!--[\s\S]*?(?:-\->|$)/],
+            // Unescaped content in an unknown language
+            ['lang-',        /^<\?([\s\S]+?)(?:\?>|$)/],
+            ['lang-',        /^<%([\s\S]+?)(?:%>|$)/],
+            [PR_PUNCTUATION, /^(?:<[%?]|[%?]>)/],
+            ['lang-',        /^<xmp\b[^>]*>([\s\S]+?)<\/xmp\b[^>]*>/i],
+            // Unescaped content in javascript.  (Or possibly vbscript).
+            ['lang-js',      /^<script\b[^>]*>([\s\S]*?)(<\/script\b[^>]*>)/i],
+            // Contains unescaped stylesheet content
+            ['lang-css',     /^<style\b[^>]*>([\s\S]*?)(<\/style\b[^>]*>)/i],
+            ['lang-in.tag',  /^(<\/?[a-z][^<>]*>)/i]
+          ]),
+        ['default-markup', 'htm', 'html', 'mxml', 'xhtml', 'xml', 'xsl']);
+      registerLangHandler(
+        createSimpleLexer(
+          [
+            [PR_PLAIN,        /^[\s]+/, null, ' \t\r\n'],
+            [PR_ATTRIB_VALUE, /^(?:\"[^\"]*\"?|\'[^\']*\'?)/, null, '\"\'']
+          ],
+          [
+            [PR_TAG,          /^^<\/?[a-z](?:[\w.:-]*\w)?|\/?>$/i],
+            [PR_ATTRIB_NAME,  /^(?!style[\s=]|on)[a-z](?:[\w:-]*\w)?/i],
+            ['lang-uq.val',   /^=\s*([^>\'\"\s]*(?:[^>\'\"\s\/]|\/(?=\s)))/],
+            [PR_PUNCTUATION,  /^[=<>\/]+/],
+            ['lang-js',       /^on\w+\s*=\s*\"([^\"]+)\"/i],
+            ['lang-js',       /^on\w+\s*=\s*\'([^\']+)\'/i],
+            ['lang-js',       /^on\w+\s*=\s*([^\"\'>\s]+)/i],
+            ['lang-css',      /^style\s*=\s*\"([^\"]+)\"/i],
+            ['lang-css',      /^style\s*=\s*\'([^\']+)\'/i],
+            ['lang-css',      /^style\s*=\s*([^\"\'>\s]+)/i]
+          ]),
+        ['in.tag']);
+      registerLangHandler(
+        createSimpleLexer([], [[PR_ATTRIB_VALUE, /^[\s\S]+/]]), ['uq.val']);
+      registerLangHandler(sourceDecorator({
+        'keywords': CPP_KEYWORDS,
+        'hashComments': true,
+        'cStyleComments': true,
+        'types': C_TYPES
+      }), ['c', 'cc', 'cpp', 'cxx', 'cyc', 'm']);
+      registerLangHandler(sourceDecorator({
+        'keywords': 'null,true,false'
+      }), ['json']);
+      registerLangHandler(sourceDecorator({
+        'keywords': CSHARP_KEYWORDS,
+        'hashComments': true,
+        'cStyleComments': true,
+        'verbatimStrings': true,
+        'types': C_TYPES
+      }), ['cs']);
+      registerLangHandler(sourceDecorator({
+        'keywords': JAVA_KEYWORDS,
+        'cStyleComments': true
+      }), ['java']);
+      registerLangHandler(sourceDecorator({
+        'keywords': SH_KEYWORDS,
+        'hashComments': true,
+        'multiLineStrings': true
+      }), ['bash', 'bsh', 'csh', 'sh']);
+      registerLangHandler(sourceDecorator({
+        'keywords': PYTHON_KEYWORDS,
+        'hashComments': true,
+        'multiLineStrings': true,
+        'tripleQuotedStrings': true
+      }), ['cv', 'py', 'python']);
+      registerLangHandler(sourceDecorator({
+        'keywords': PERL_KEYWORDS,
+        'hashComments': true,
+        'multiLineStrings': true,
+        'regexLiterals': 2  // multiline regex literals
+      }), ['perl', 'pl', 'pm']);
+      registerLangHandler(sourceDecorator({
+        'keywords': RUBY_KEYWORDS,
+        'hashComments': true,
+        'multiLineStrings': true,
+        'regexLiterals': true
+      }), ['rb', 'ruby']);
+      registerLangHandler(sourceDecorator({
+        'keywords': JSCRIPT_KEYWORDS,
+        'cStyleComments': true,
+        'regexLiterals': true
+      }), ['javascript', 'js']);
+      registerLangHandler(sourceDecorator({
+        'keywords': COFFEE_KEYWORDS,
+        'hashComments': 3,  // ### style block comments
+        'cStyleComments': true,
+        'multilineStrings': true,
+        'tripleQuotedStrings': true,
+        'regexLiterals': true
+      }), ['coffee']);
+      registerLangHandler(
+        createSimpleLexer([], [[PR_STRING, /^[\s\S]+/]]), ['regex']);
+
+      /** @param {JobT} job */
+      function applyDecorator(job) {
+        var opt_langExtension = job.langExtension;
+
+        try {
+          // Extract tags, and convert the source code to plain text.
+          var sourceAndSpans = extractSourceSpans(job.sourceNode, job.pre);
+          /** Plain text. @type {string} */
+          var source = sourceAndSpans.sourceCode;
+          job.sourceCode = source;
+          job.spans = sourceAndSpans.spans;
+          job.basePos = 0;
+
+          // Apply the appropriate language handler
+          langHandlerForExtension(opt_langExtension, source)(job);
+
+          // Integrate the decorations and tags back into the source code,
+          // modifying the sourceNode in place.
+          recombineTagsAndDecorations(job);
+        } catch (e) {
+          if (win['console']) {
+            console['log'](e && e['stack'] || e);
+          }
+        }
+      }
+
+      /**
+       * Pretty print a chunk of code.
+       * @param sourceCodeHtml {string} The HTML to pretty print.
+       * @param opt_langExtension {string} The language name to use.
+       *     Typically, a filename extension like 'cpp' or 'java'.
+       * @param opt_numberLines {number|boolean} True to number lines,
+       *     or the 1-indexed number of the first line in sourceCodeHtml.
+       */
+      function $prettyPrintOne(sourceCodeHtml, opt_langExtension, opt_numberLines) {
+        /** @type{number|boolean} */
+        var nl = opt_numberLines || false;
+        /** @type{string|null} */
+        var langExtension = opt_langExtension || null;
+        /** @type{!Element} */
+        var container = document.createElement('div');
+        // This could cause images to load and onload listeners to fire.
+        // E.g. <img onerror="alert(1337)" src="nosuchimage.png">.
+        // We assume that the inner HTML is from a trusted source.
+        // The pre-tag is required for IE8 which strips newlines from innerHTML
+        // when it is injected into a <pre> tag.
+        // http://stackoverflow.com/questions/451486/pre-tag-loses-line-breaks-when-setting-innerhtml-in-ie
+        // http://stackoverflow.com/questions/195363/inserting-a-newline-into-a-pre-tag-ie-javascript
+        container.innerHTML = '<pre>' + sourceCodeHtml + '</pre>';
+        container = /** @type{!Element} */(container.firstChild);
+        if (nl) {
+          numberLines(container, nl, true);
+        }
+
+        /** @type{JobT} */
+        var job = {
+          langExtension: langExtension,
+          numberLines: nl,
+          sourceNode: container,
+          pre: 1,
+          sourceCode: null,
+          basePos: null,
+          spans: null,
+          decorations: null
+        };
+        applyDecorator(job);
+        return container.innerHTML;
+      }
+
+      /**
+       * Find all the {@code <pre>} and {@code <code>} tags in the DOM with
+       * {@code class=prettyprint} and prettify them.
+       *
+       * @param {Function} opt_whenDone called when prettifying is done.
+       * @param {HTMLElement|HTMLDocument} opt_root an element or document
+       *   containing all the elements to pretty print.
+       *   Defaults to {@code document.body}.
+       */
+      function $prettyPrint(opt_whenDone, opt_root) {
+        var root = opt_root || document.body;
+        var doc = root.ownerDocument || document;
+        function byTagName(tn) { return root.getElementsByTagName(tn); }
+        // fetch a list of nodes to rewrite
+        var codeSegments = [byTagName('pre'), byTagName('code'), byTagName('xmp')];
+        var elements = [];
+        for (var i = 0; i < codeSegments.length; ++i) {
+          for (var j = 0, n = codeSegments[i].length; j < n; ++j) {
+            elements.push(codeSegments[i][j]);
+          }
+        }
+        codeSegments = null;
+
+        var clock = Date;
+        if (!clock['now']) {
+          clock = { 'now': function () { return +(new Date); } };
+        }
+
+        // The loop is broken into a series of continuations to make sure that we
+        // don't make the browser unresponsive when rewriting a large page.
+        var k = 0;
+
+        var langExtensionRe = /\blang(?:uage)?-([\w.]+)(?!\S)/;
+        var prettyPrintRe = /\bprettyprint\b/;
+        var prettyPrintedRe = /\bprettyprinted\b/;
+        var preformattedTagNameRe = /pre|xmp/i;
+        var codeRe = /^code$/i;
+        var preCodeXmpRe = /^(?:pre|code|xmp)$/i;
+        var EMPTY = {};
+
+        function doWork() {
+          var endTime = (win['PR_SHOULD_USE_CONTINUATION'] ?
+          clock['now']() + 250 /* ms */ :
+            Infinity);
+          for (; k < elements.length && clock['now']() < endTime; k++) {
+            var cs = elements[k];
+
+            // Look for a preceding comment like
+            // <?prettify lang="..." linenums="..."?>
+            var attrs = EMPTY;
+            {
+              for (var preceder = cs; (preceder = preceder.previousSibling);) {
+                var nt = preceder.nodeType;
+                // <?foo?> is parsed by HTML 5 to a comment node (8)
+                // like <!--?foo?-->, but in XML is a processing instruction
+                var value = (nt === 7 || nt === 8) && preceder.nodeValue;
+                if (value
+                    ? !/^\??prettify\b/.test(value)
+                    : (nt !== 3 || /\S/.test(preceder.nodeValue))) {
+                  // Skip over white-space text nodes but not others.
+                  break;
+                }
+                if (value) {
+                  attrs = {};
+                  value.replace(
+                    /\b(\w+)=([\w:.%+-]+)/g,
+                    function (_, name, value) { attrs[name] = value; });
+                  break;
+                }
+              }
+            }
+
+            var className = cs.className;
+            if ((attrs !== EMPTY || prettyPrintRe.test(className))
+              // Don't redo this if we've already done it.
+              // This allows recalling pretty print to just prettyprint elements
+              // that have been added to the page since last call.
+              && !prettyPrintedRe.test(className)) {
+
+              // make sure this is not nested in an already prettified element
+              var nested = false;
+              for (var p = cs.parentNode; p; p = p.parentNode) {
+                var tn = p.tagName;
+                if (preCodeXmpRe.test(tn)
+                  && p.className && prettyPrintRe.test(p.className)) {
+                  nested = true;
+                  break;
+                }
+              }
+              if (!nested) {
+                // Mark done.  If we fail to prettyprint for whatever reason,
+                // we shouldn't try again.
+                cs.className += ' prettyprinted';
+
+                // If the classes includes a language extensions, use it.
+                // Language extensions can be specified like
+                //     <pre class="prettyprint lang-cpp">
+                // the language extension "cpp" is used to find a language handler
+                // as passed to PR.registerLangHandler.
+                // HTML5 recommends that a language be specified using "language-"
+                // as the prefix instead.  Google Code Prettify supports both.
+                // http://dev.w3.org/html5/spec-author-view/the-code-element.html
+                var langExtension = attrs['lang'];
+                if (!langExtension) {
+                  langExtension = className.match(langExtensionRe);
+                  // Support <pre class="prettyprint"><code class="language-c">
+                  var wrapper;
+                  if (!langExtension && (wrapper = childContentWrapper(cs))
+                    && codeRe.test(wrapper.tagName)) {
+                    langExtension = wrapper.className.match(langExtensionRe);
+                  }
+
+                  if (langExtension) { langExtension = langExtension[1]; }
+                }
+
+                var preformatted;
+                if (preformattedTagNameRe.test(cs.tagName)) {
+                  preformatted = 1;
+                } else {
+                  var currentStyle = cs['currentStyle'];
+                  var defaultView = doc.defaultView;
+                  var whitespace = (
+                    currentStyle
+                      ? currentStyle['whiteSpace']
+                      : (defaultView
+                    && defaultView.getComputedStyle)
+                      ? defaultView.getComputedStyle(cs, null)
+                      .getPropertyValue('white-space')
+                      : 0);
+                  preformatted = whitespace
+                    && 'pre' === whitespace.substring(0, 3);
+                }
+
+                // Look for a class like linenums or linenums:<n> where <n> is the
+                // 1-indexed number of the first line.
+                var lineNums = attrs['linenums'];
+                if (!(lineNums = lineNums === 'true' || +lineNums)) {
+                  lineNums = className.match(/\blinenums\b(?::(\d+))?/);
+                  lineNums =
+                    lineNums
+                      ? lineNums[1] && lineNums[1].length
+                      ? +lineNums[1] : true
+                      : false;
+                }
+                if (lineNums) { numberLines(cs, lineNums, preformatted); }
+
+                // do the pretty printing
+                var prettyPrintingJob = {
+                  langExtension: langExtension,
+                  sourceNode: cs,
+                  numberLines: lineNums,
+                  pre: preformatted,
+                  sourceCode: null,
+                  basePos: null,
+                  spans: null,
+                  decorations: null
+                };
+                applyDecorator(prettyPrintingJob);
+              }
+            }
+          }
+          if (k < elements.length) {
+            // finish up in a continuation
+            win.setTimeout(doWork, 250);
+          } else if ('function' === typeof opt_whenDone) {
+            opt_whenDone();
+          }
+        }
+
+        doWork();
+      }
+
+      /**
+       * Contains functions for creating and registering new language handlers.
+       * @type {Object}
+       */
+      var PR = win['PR'] = {
+        'createSimpleLexer': createSimpleLexer,
+        'registerLangHandler': registerLangHandler,
+        'sourceDecorator': sourceDecorator,
+        'PR_ATTRIB_NAME': PR_ATTRIB_NAME,
+        'PR_ATTRIB_VALUE': PR_ATTRIB_VALUE,
+        'PR_COMMENT': PR_COMMENT,
+        'PR_DECLARATION': PR_DECLARATION,
+        'PR_KEYWORD': PR_KEYWORD,
+        'PR_LITERAL': PR_LITERAL,
+        'PR_NOCODE': PR_NOCODE,
+        'PR_PLAIN': PR_PLAIN,
+        'PR_PUNCTUATION': PR_PUNCTUATION,
+        'PR_SOURCE': PR_SOURCE,
+        'PR_STRING': PR_STRING,
+        'PR_TAG': PR_TAG,
+        'PR_TYPE': PR_TYPE,
+        'prettyPrintOne':
+          IN_GLOBAL_SCOPE
+            ? (win['prettyPrintOne'] = $prettyPrintOne)
+            : (prettyPrintOne = $prettyPrintOne),
+        'prettyPrint': prettyPrint =
+          IN_GLOBAL_SCOPE
+            ? (win['prettyPrint'] = $prettyPrint)
+            : (prettyPrint = $prettyPrint)
+      };
+
+      // Make PR available via the Asynchronous Module Definition (AMD) API.
+      // Per https://github.com/amdjs/amdjs-api/wiki/AMD:
+      // The Asynchronous Module Definition (AMD) API specifies a
+      // mechanism for defining modules such that the module and its
+      // dependencies can be asynchronously loaded.
+      // ...
+      // To allow a clear indicator that a global define function (as
+      // needed for script src browser loading) conforms to the AMD API,
+      // any global define function SHOULD have a property called "amd"
+      // whose value is an object. This helps avoid conflict with any
+      // other existing JavaScript code that could have defined a define()
+      // function that does not conform to the AMD API.
+      var define = win['define'];
+      if (typeof define === "function" && define['amd']) {
+        define("google-code-prettify", [], function () {
+          return PR;
+        });
+      }
+    })();
+    return prettyPrint;
+  })();
+
+  // If this script is deferred or async and the document is already
+  // loaded we need to wait for language handlers to load before performing
+  // any autorun.
+  function onLangsLoaded() {
+    if (autorun) {
+      contentLoaded(
+        function () {
+          var n = callbacks.length;
+          var callback = n ? function () {
+            for (var i = 0; i < n; ++i) {
+              (function (i) {
+                win.setTimeout(
+                  function () {
+                    win['exports'][callbacks[i]].apply(win, arguments);
+                  }, 0);
+              })(i);
+            }
+          } : void 0;
+          prettyPrint(callback);
+        });
+    }
+  }
+  checkPendingLanguages();
+}());
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var showdown = __webpack_require__(0);
+
+var converter = new showdown.Converter();
+
+showdown.extension('footnote', function () {
+  return [{
+    type: 'lang',
+    filter: function filter(text) {
+      return text.replace(/^\[\^([\d\w]+)\]:\s*((\n+(\s{2,4}|\t).+)+)$/mg, function (str, name, rawContent, _, padding) {
+        var content = converter.makeHtml(rawContent.replace(new RegExp('^' + padding, 'gm'), ''));
+        return '<div class="footnote" id="footnote-' + name + '"><a href="#footnote-' + name + '"><sup>[' + name + ']</sup></a>:' + content + '</div>';
+      });
+    }
+  }, {
+    type: 'lang',
+    filter: function filter(text) {
+      return text.replace(/^\[\^([\d\w]+)\]:( |\n)((.+\n)*.+)$/mg, function (str, name, _, content) {
+        return '<small class="footnote" id="footnote-' + name + '"><a href="#footnote-' + name + '"><sup>[' + name + ']</sup></a>: ' + content + '</small>';
+      });
+    }
+  }, {
+    type: 'lang',
+    filter: function filter(text) {
+      return text.replace(/\[\^([\d\w]+)\]/m, function (str, name) {
+        return '<a href="#footnote-' + name + '"><sup>[' + name + ']</sup></a>';
+      });
+    }
+  }];
+});
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var showdown = __webpack_require__(0);
+
+showdown.extension('tasklist', function () {
+  return [{
+    type:   'output',
+    filter: function (source) {
+      source = source.replace(/<li>\[ \] (.*)<\/li>/gi, function (match, pre) {
+        if(pre){
+          return '<p class="task-list-list uncheck" style="list-style-type: none;"><i class="icon_uncheck"></i><span>' + pre + '</span></p>'  ;
+        }
+      });
+
+      source = source.replace(/<li>\[x] (.*)<\/li>/gi, function (match, pre) {
+        if(pre){
+          return '<p class="task-list-list checked" style="list-style-type: none;"><i class="icon_check"></i>' + pre + '</p>'  ;
+        }
+      });
+
+      return source;
+    }
+  }];
+});
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var showdown = __webpack_require__(0);
+
+showdown.extension('prettify', function () {
+  return [{
+    type:   'output',
+    filter: function (source) {
+      return source.replace(/(<pre[^>]*>)?[\n\s]?<code([^>]*)>/gi, function (match, pre, codeClass) {
+        if (pre) {
+          return '<pre class="prettyprint linenums" style="font-size: 10px;line-height: 12px"><code' + codeClass + ' style="font-size: 10px;line-height: 12px">';
+        } else {
+          return ' <code class="prettyprint code-in-text"  style="font-size: 16px;line-height: 18px">';
+        }
+      });
+    }
+  }];
+});
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(1);
+
+var themes = [
+  'atelier-cave-dark',
+  'atelier-cave-light',
+  'atelier-dune-dark',
+  'atelier-dune-light',
+  'atelier-estuary-dark',
+  'atelier-estuary-light',
+  'atelier-forest-dark',
+  'atelier-forest-light',
+  'atelier-heath-dark',
+  'atelier-heath-light',
+  'atelier-lakeside-dark',
+  'atelier-lakeside-light',
+  'atelier-plateau-dark',
+  'atelier-plateau-light',
+  'atelier-savanna-dark',
+  'atelier-savanna-light',
+  'atelier-seaside-dark',
+  'atelier-seaside-light',
+  'atelier-sulphurpool-dark',
+  'atelier-sulphurpool-light',
+  'github-light',
+  'github-v2',
+  'github',
+  'hemisu-dark',
+  'hemisu-light',
+  'tomorrow-night-blue',
+  'tomorrow-night-bright',
+  'tomorrow-night-eighties',
+  'tomorrow-night',
+  'tomorrow',
+  'tranquil-heart',
+  'vibrant-ink'
+];
+var currentTheme = 'atelier-forest-light';
+
+let CodeTheme = function () {
+  this.init();
+};
+
+CodeTheme.prototype.init = function() {
+  this.bindEvt();
+};
+
+CodeTheme.prototype.bindEvt = function() {
+  var $options = $.map(themes, function(item) {
+    var selected = currentTheme === item ? ' selected' : '';
+    return '<option value="' + item + '"' + selected + '>' + item +'</option>';
+  });
+  $('.code-theme').html($options);
+  $('.code-theme').on('change', function() {
+    var val = $(this).val();
+    $("#codeThemeId").attr('href', './themes/' + val + '.css');
+  }).trigger('change');
+};
+
+
+module.exports = CodeTheme;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(1);
+
+var themes = [
+  '默认样式-适合代码',
+  '字号偏大-间距偏大-窄屏模式',
+  '字号偏大-间距偏大-宽屏模式'
+];
+var currentTheme = '字号偏大-间距偏大-宽屏模式';
+
+let PageTheme = function () {
+  this.init();
+};
+
+PageTheme.prototype.init = function() {
+  this.bindEvt();
+};
+
+PageTheme.prototype.bindEvt = function() {
+  var $options = $.map(themes, function(item) {
+    var selected = currentTheme === item ? ' selected' : '';
+    return '<option value="' + item + '"' + selected + '>' + item +'</option>';
+  });
+  $('.page-theme').html($options);
+  $('.page-theme').on('change', function() {
+    var val = $(this).val();
+    $("#pageThemeId").attr('href', './pageThemes/' + val + '.css');
+  }).trigger('change');
+};
+
+
+module.exports = PageTheme;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(11);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(13)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/less-loader/index.js?sourceMap!./index.less", function() {
+			var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/less-loader/index.js?sourceMap!./index.less");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)();
+// imports
+exports.i(__webpack_require__(12), "");
+
+// module
+exports.push([module.i, "@charset \"utf-8\";\nh3#headline {\n  color: #444;\n  margin: 0;\n  padding: 11px 0px 5px 0px;\n  font-size: 11px;\n  line-height: 14px;\n  text-transform: uppercase;\n  letter-spacing: 2px;\n  font-weight: bold;\n}\nh2#headline {\n  color: #444;\n  margin: 0;\n  padding: 0px 0px 6px 0px;\n  font-size: 51px;\n  line-height: 44px;\n  letter-spacing: -2px;\n  font-weight: bold;\n  text-transform: none;\n}\n/* 防止用户自定义背景颜色对网页的影响，添加让用户可以自定义字体 */\nhtml {\n  color: #333;\n  background: #fff;\n  -webkit-text-size-adjust: 100%;\n  -ms-text-size-adjust: 100%;\n  text-rendering: optimizelegibility;\n}\n/* 如果你的项目仅支持 IE9+ | Chrome | Firefox 等，推荐在 <html> 中添加 .borderbox 这个 class */\nhtml.borderbox *,\nhtml.borderbox *:before,\nhtml.borderbox *:after {\n  -moz-box-sizing: border-box;\n  -webkit-box-sizing: border-box;\n  box-sizing: border-box;\n}\n/* 内外边距通常让各个浏览器样式的表现位置不同 */\nbody,\ndl,\ndt,\ndd,\nul,\nol,\nli,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\npre,\ncode,\nform,\nfieldset,\nlegend,\ninput,\ntextarea,\np,\nblockquote,\nth,\ntd,\nhr,\nbutton,\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nmenu,\nnav,\nsection {\n  margin: 0;\n  padding: 0;\n}\n/* 重设 HTML5 标签, IE 需要在 js 中 createElement(TAG) */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nmenu,\nnav,\nsection {\n  display: block;\n}\n/* HTML5 媒体文件跟 img 保持一致 */\naudio,\ncanvas,\nvideo {\n  display: inline-block;\n}\n/* 要注意表单元素并不继承父级 font 的问题 */\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font: 300 1em/1.8 'PingFang SC', 'Lantinghei SC', 'Microsoft Yahei', 'Hiragino Sans GB', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', 'sans';\n}\nbutton::-moz-focus-inner,\ninput::-moz-focus-inner {\n  padding: 0;\n  border: 0;\n}\n/* 去掉各Table cell 的边距并让其边重合 */\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n/* 去除默认边框 */\nfieldset,\nimg {\n  border: 0;\n}\n/* 块/段落引用 */\nblockquote {\n  position: relative;\n  color: #999;\n  font-weight: 400;\n  border-left: 1px solid #1abc9c;\n  padding-left: 1em;\n  margin: 1em 0 1em 2em;\n}\n@media only screen and (max-width: 640px) {\n  blockquote {\n    margin: 1em 0;\n  }\n}\n/* Firefox 以外，元素没有下划线，需添加 */\nacronym,\nabbr {\n  border-bottom: 1px dotted;\n  font-variant: normal;\n}\n/* 添加鼠标问号，进一步确保应用的语义是正确的（要知道，交互他们也有洁癖，如果你不去掉，那得多花点口舌） */\nabbr {\n  cursor: help;\n}\n/* 一致的 del 样式 */\ndel {\n  text-decoration: line-through;\n}\naddress,\ncaption,\ncite,\ncode,\ndfn,\nem,\nth,\nvar {\n  font-style: normal;\n  font-weight: 400;\n}\n/* 去掉列表前的标识, li 会继承，大部分网站通常用列表来很多内容，所以应该当去 */\nul,\nol {\n  list-style: none;\n}\n/* 对齐是排版最重要的因素, 别让什么都居中 */\ncaption,\nth {\n  text-align: left;\n}\nq:before,\nq:after {\n  content: '';\n}\n/* 统一上标和下标 */\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n}\n:root sub,\n:root sup {\n  vertical-align: baseline;\n  /* for ie9 and other modern browsers */\n}\nsup {\n  top: -0.5em;\n}\nsub {\n  bottom: -0.25em;\n}\n/* 让链接在 hover 状态下显示下划线 */\na {\n  color: #1abc9c;\n}\na:hover {\n  text-decoration: underline;\n}\n.typo a {\n  border-bottom: 1px solid #1abc9c;\n}\n.typo a:hover {\n  border-bottom-color: #555;\n  color: #555;\n  text-decoration: none;\n}\n/* 默认不显示下划线，保持页面简洁 */\nins,\na {\n  text-decoration: none;\n}\n/* 专名号：虽然 u 已经重回 html5 Draft，但在所有浏览器中都是可以使用的，\n * 要做到更好，向后兼容的话，添加 class=\"typo-u\" 来显示专名号\n * 关于 <u> 标签：http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-u-element\n * 被放弃的是 4，之前一直搞错 http://www.w3.org/TR/html401/appendix/changes.html#idx-deprecated\n * 一篇关于 <u> 标签的很好文章：http://html5doctor.com/u-element/\n */\nu,\n.typo-u {\n  text-decoration: underline;\n}\n/* 标记，类似于手写的荧光笔的作用 */\nmark {\n  background: #fffdd1;\n  border-bottom: 1px solid #ffedce;\n  padding: 2px;\n  margin: 0 5px;\n}\n/* 代码片断 */\npre,\ncode,\npre tt {\n  font-family: Courier, 'Courier New', monospace;\n}\npre {\n  background: #f8f8f8;\n  border: 1px solid #ddd;\n  padding: 1em 1.5em;\n  display: block;\n  -webkit-overflow-scrolling: touch;\n}\n/* 一致化 horizontal rule */\nhr {\n  border: none;\n  border-bottom: 1px solid #cfcfcf;\n  margin-bottom: 0.8em;\n  height: 10px;\n}\n/* 底部印刷体、版本等标记 */\nsmall,\n.typo-small,\nfigcaption {\n  font-size: 0.9em;\n  color: #888;\n}\nstrong,\nb {\n  font-weight: bold;\n  color: #000;\n}\n/* 可拖动文件添加拖动手势 */\n[draggable] {\n  cursor: move;\n}\n.clearfix:before,\n.clearfix:after {\n  content: \"\";\n  display: table;\n}\n.clearfix:after {\n  clear: both;\n}\n.clearfix {\n  zoom: 1;\n}\n/* 强制文本换行 */\n.textwrap,\n.textwrap td,\n.textwrap th {\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.textwrap-table {\n  table-layout: fixed;\n}\n/* 提供 serif 版本的字体设置: iOS 下中文自动 fallback 到 sans-serif */\n.serif {\n  font-family: Palatino, Optima, Georgia, serif;\n}\n/* 保证块/段落之间的空白隔行 */\n.typo p,\n.typo pre,\n.typo ul,\n.typo ol,\n.typo dl,\n.typo form,\n.typo hr,\n.typo table,\n.typo-p,\n.typo-pre,\n.typo-ul,\n.typo-ol,\n.typo-dl,\n.typo-form,\n.typo-hr,\n.typo-table,\nblockquote {\n  margin-bottom: 1.2em;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-family: PingFang SC, Verdana, Helvetica Neue, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;\n  font-weight: 100;\n  color: #000;\n  line-height: 1.35;\n}\n/* 标题应该更贴紧内容，并与其他块区分，margin 值要相应做优化 */\n.typo h1,\n.typo h2,\n.typo h3,\n.typo h4,\n.typo h5,\n.typo h6,\n.typo-h1,\n.typo-h2,\n.typo-h3,\n.typo-h4,\n.typo-h5,\n.typo-h6 {\n  margin-top: 1.2em;\n  margin-bottom: 0.6em;\n  line-height: 1.35;\n}\n.typo h1,\n.typo-h1 {\n  font-size: 2em;\n}\n.typo h2,\n.typo-h2 {\n  font-size: 1.8em;\n}\n.typo h3,\n.typo-h3 {\n  font-size: 1.6em;\n}\n.typo h4,\n.typo-h4 {\n  font-size: 1.4em;\n}\n.typo h5,\n.typo h6,\n.typo-h5,\n.typo-h6 {\n  font-size: 1.2em;\n}\n/* 在文章中，应该还原 ul 和 ol 的样式 */\n.typo ul,\n.typo-ul {\n  margin-left: 1.3em;\n  list-style: disc;\n}\n.typo ol,\n.typo-ol {\n  list-style: decimal;\n  margin-left: 1.9em;\n}\n.typo li ul,\n.typo li ol,\n.typo-ul ul,\n.typo-ul ol,\n.typo-ol ul,\n.typo-ol ol {\n  margin-bottom: 0.8em;\n  margin-left: 2em;\n}\n.typo li ul,\n.typo-ul ul,\n.typo-ol ul {\n  list-style: circle;\n}\n/* 同 ul/ol，在文章中应用 table 基本格式 */\n.typo table th,\n.typo table td,\n.typo-table th,\n.typo-table td,\n.typo table caption {\n  border: 1px solid #ddd;\n  padding: 0.5em 1em;\n  color: #666;\n}\n.typo table th,\n.typo-table th {\n  background: #fbfbfb;\n}\n.typo table thead th,\n.typo-table thead th {\n  background: #f1f1f1;\n}\n.typo table caption {\n  border-bottom: none;\n}\n/* 去除 webkit 中 input 和 textarea 的默认样式  */\n.typo-input,\n.typo-textarea {\n  -webkit-appearance: none;\n  border-radius: 0;\n}\n.typo-em,\n.typo em,\nlegend,\ncaption {\n  color: #000;\n  font-weight: inherit;\n}\n/* 着重号，只能在少量（少于100个字符）且全是全角字符的情况下使用 */\n.typo-em {\n  position: relative;\n}\n.typo-em:after {\n  position: absolute;\n  top: 0.65em;\n  left: 0;\n  width: 100%;\n  overflow: hidden;\n  white-space: nowrap;\n  content: \"\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\\30FB\";\n}\n/* Responsive images */\n.typo img {\n  max-width: 100%;\n}\n::selection {\n  background: #fde6ba;\n  color: #000;\n}\nbutton,\ntextarea,\nselect {\n  outline: none;\n}\nbody,\nhtml {\n  overflow: hidden;\n}\nbody {\n  font-size: 15px !important;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-family: 'Menlo', 'Monaco', 'Source Code Pro', 'Consolas', 'Inconsolata', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Courier New', 'Droid Sans Mono', 'Hiragino Sans GB', '\\5FAE\\8F6F\\96C5\\9ED1', monospace !important;\n}\nh1 {\n  font-size: 26px;\n}\nh2 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n}\nh4 {\n  font-size: 14px;\n}\na {\n  font-size: 15px !important;\n  word-break: break-all !important;\n}\nul,\nol {\n  padding-left: 32px !important;\n  list-style-type: square !important;\n}\nul li span,\nol li span {\n  font-size: 14px !important;\n  color: #4a4a4a;\n}\nol {\n  list-style-type: decimal !important;\n}\n.topheader {\n  overflow: hidden;\n  -webkit-user-select: none;\n  height: 68px;\n  padding: 0 20px;\n  position: relative;\n  background: #499bea;\n  background: -moz-linear-gradient(left, #e5e5be 0, #003973 100%);\n  background: -webkit-gradient(linear, left, right, color-sleft(0%, #e5e5be), color-sleft(100%, #003973));\n  background: -webkit-linear-gradient(left, #e5e5be 0, #003973 100%);\n  background: -o-linear-gradient(left, #e5e5be 0, #003973 100%);\n  background: -ms-linear-gradient(left, #e5e5be 0, #003973 100%);\n  background: linear-gradient(to left, #e5e5be 0, #003973 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5be', endColorstr='#003973', GradientType=1);\n}\n.topheader h1 {\n  font-size: 30px;\n  line-height: 64px;\n  color: #FFF;\n  font-family: fantasy,cursive,consolas;\n  text-shadow: 1px 1px 1px #000, 1px 1px 3px #CCC;\n  display: inline-block;\n}\n.topheader span {\n  font-size: 13px;\n  display: inline-block;\n  margin-left: 0;\n  color: #E4E4E4;\n  position: relative;\n  top: 10px;\n}\n.topheader span a {\n  color: #E4E4E4;\n}\n.topheader a:hover {\n  color: #e58c7c;\n}\n.topheader ul {\n  position: absolute;\n  right: 20px;\n  top: 0;\n  list-style-type: none !important;\n  height: 64px;\n  line-height: 64px;\n}\n.topheader ul li {\n  float: left;\n  margin-left: 20px;\n  font-family: consolas;\n}\n.topheader ul li a {\n  color: #555;\n  display: inline-block;\n  height: 100%;\n  line-height: 64px;\n}\n.topheader ul li a {\n  color: #555;\n}\n.topheader ul li a:hover {\n  color: #000;\n  text-decoration: underline;\n}\n.topheader ul li .icon {\n  margin-right: 4px;\n  vertical-align: middle;\n  transition: none;\n}\ntextarea {\n  width: 100%;\n  margin: 0;\n  padding: 1em;\n  overflow: auto;\n  border: none;\n  background-color: #fff;\n  font-family: courier, monospace;\n  font-size: inherit;\n  color: inherit;\n  outline: none;\n  background: #333;\n  color: #fff;\n  position: absolute;\n  top: 64px;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  resize: none;\n  z-index: 2;\n  font-size: 15px;\n}\n#output {\n  position: absolute;\n  top: 64px;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  resize: none;\n  z-index: 1;\n  background: #EEE;\n  overflow: hidden;\n}\n#output .wrapper {\n  overflow-y: auto;\n  height: 100%;\n  margin: 20px auto;\n  background: #FFF;\n  padding: 1rem;\n  width: 800px;\n  padding-bottom: 100px;\n  max-width: 100%;\n  -webkit-overflow-scrolling: touch;\n}\n.github-star {\n  position: relative;\n  top: 5px;\n}\n.btn {\n  border: none;\n  color: white;\n  padding: 5px 25px;\n  text-align: center;\n  text-decoration: none;\n  display: inline-block;\n  font-size: 16px;\n  box-shadow: 1px 1px 3px #666;\n}\n.convert-button,\n.copy-button {\n  position: absolute;\n  right: 110px;\n  z-index: 3;\n  top: 80px;\n  border-radius: 3px;\n  background-color: #3a6586;\n}\n.convert-button {\n  right: 15px;\n  background-color: #e3e4bd;\n  color: #555;\n}\n.themes-config {\n  margin: 0 auto;\n  width: 800px;\n  max-width: 100%;\n  padding-top: 20px;\n  padding-left: 8px;\n}\n.themes-config .theme-wrapper {\n  margin-top: 8px;\n  display: inline-block;\n  margin-right: 20px;\n}\n.themes-config .theme-wrapper select {\n  background: #FFF;\n}\n@media screen and (max-width: 641px) {\n  .topheader ul {\n    display: none;\n  }\n  .btn {\n    padding: 2px 15px;\n    font-size: 14px;\n  }\n  .copy-button {\n    right: 80px;\n  }\n}\n* {\n  box-sizing: border-box;\n}\nbody {\n  padding: 0;\n  margin: 0;\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 16px;\n  line-height: 1.5;\n  color: #50616D;\n}\na {\n  color: #1e6bb8;\n  text-decoration: none;\n}\na:hover {\n  text-decoration: underline;\n}\n:first-child {\n  margin-top: 0;\n}\nimg {\n  border-radius: 6px;\n  border: 2px solid #EEE;\n  max-width: 100%;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin-top: 1.5rem;\n  margin-bottom: 1rem;\n  font-weight: normal;\n  color: #159957;\n}\np {\n  margin-bottom: 15px;\n  margin-top: 15px;\n}\npre p {\n  margin: 0;\n}\npre ul,\npre ol {\n  margin: 0;\n  padding-top: 12px;\n  padding-bottom: 12px;\n}\npre code,\npre tt {\n  display: inline;\n  padding: 0;\n  margin: 0;\n  overflow: initial;\n  line-height: inherit;\n  word-wrap: normal;\n  border: 0;\n}\npre code:before,\npre code:after,\npre tt:before,\npre tt:after {\n  content: normal;\n}\nul,\nol {\n  margin-top: 0;\n}\nblockquote {\n  padding: 15px 1rem;\n  font-size: 14px;\n  line-height: 18px;\n  padding-right: 15px;\n  margin-left: 0;\n  color: #819198;\n  border-left: 6px solid #dce6f0;\n  background: #f2f7fb;\n}\nblockquote > :first-child {\n  margin-top: 0;\n}\nblockquote > :last-child {\n  margin-bottom: 0;\n}\ntable {\n  display: block;\n  width: 100%;\n  overflow: auto;\n  word-break: normal;\n  word-break: keep-all;\n}\ntable th {\n  font-weight: bold;\n}\ntable th,\ntable td {\n  padding: 0.5rem 1rem;\n  border: 1px solid #e9ebec;\n}\ndl {\n  padding: 0;\n}\ndl dt {\n  padding: 0;\n  margin-top: 1rem;\n  font-size: 1rem;\n  font-weight: bold;\n}\ndl dd {\n  padding: 0;\n  margin-bottom: 1rem;\n}\nhr {\n  height: 1px;\n  margin: 1.5rem 0;\n  border: none;\n  border-top: 1px dashed #A5A5A5;\n}\n.hljs {\n  display: block;\n  overflow-x: auto;\n  padding: 0.5em;\n  background: #F0F0F0;\n}\n.hljs,\n.hljs-subst {\n  color: #444;\n}\n.hljs-comment {\n  color: #888888;\n}\n.hljs-attribute,\n.hljs-doctag,\n.hljs-keyword,\n.hljs-meta-keyword,\n.hljs-name,\n.hljs-selector-tag {\n  font-weight: bold;\n}\n.hljs-deletion,\n.hljs-number,\n.hljs-quote,\n.hljs-selector-class,\n.hljs-selector-id,\n.hljs-string,\n.hljs-template-tag,\n.hljs-type {\n  color: #880000;\n}\n.hljs-section,\n.hljs-title {\n  color: #880000;\n  font-weight: bold;\n}\n.hljs-link,\n.hljs-regexp,\n.hljs-selector-attr,\n.hljs-selector-pseudo,\n.hljs-symbol,\n.hljs-template-variable,\n.hljs-variable {\n  color: #BC6060;\n}\n.hljs-literal {\n  color: #78A960;\n}\n.hljs-addition,\n.hljs-built_in,\n.hljs-bullet,\n.hljs-code {\n  color: #397300;\n}\n.hljs-meta {\n  color: #1f7199;\n}\n.hljs-meta-string {\n  color: #4d99bf;\n}\n.hljs-emphasis {\n  font-style: italic;\n}\n.hljs-strong {\n  font-weight: bold;\n}\n.pln {\n  color: #000;\n}\n@media screen {\n  .str {\n    color: #080;\n  }\n  .kwd {\n    color: #008;\n  }\n  .com {\n    color: #800;\n  }\n  .typ {\n    color: #606;\n  }\n  .lit {\n    color: #066;\n  }\n  .pun,\n  .opn,\n  .clo {\n    color: #660;\n  }\n  .tag {\n    color: #008;\n  }\n  .atn {\n    color: #606;\n  }\n  .atv {\n    color: #080;\n  }\n  .dec,\n  .var {\n    color: #606;\n  }\n  .fun {\n    color: red;\n  }\n}\n@media print, projection {\n  .str {\n    color: #060;\n  }\n  .kwd {\n    color: #006;\n    font-weight: bold;\n  }\n  .com {\n    color: #600;\n    font-style: italic;\n  }\n  .typ {\n    color: #404;\n    font-weight: bold;\n  }\n  .lit {\n    color: #044;\n  }\n  .pun,\n  .opn,\n  .clo {\n    color: #440;\n  }\n  .tag {\n    color: #006;\n    font-weight: bold;\n  }\n  .atn {\n    color: #404;\n  }\n  .atv {\n    color: #060;\n  }\n}\n.pln {\n  color: #000;\n}\n@media screen {\n  .str {\n    color: #080;\n  }\n  .kwd {\n    color: #008;\n  }\n  .com {\n    color: #800;\n  }\n  .typ {\n    color: #606;\n  }\n  .lit {\n    color: #066;\n  }\n  .pun,\n  .opn,\n  .clo {\n    color: #660;\n  }\n  .tag {\n    color: #008;\n  }\n  .atn {\n    color: #606;\n  }\n  .atv {\n    color: #080;\n  }\n  .dec,\n  .var {\n    color: #606;\n  }\n  .fun {\n    color: red;\n  }\n}\n@media print, projection {\n  .str {\n    color: #060;\n  }\n  .kwd {\n    color: #006;\n    font-weight: bold;\n  }\n  .com {\n    color: #600;\n    font-style: italic;\n  }\n  .typ {\n    color: #404;\n    font-weight: bold;\n  }\n  .lit {\n    color: #044;\n  }\n  .pun,\n  .opn,\n  .clo {\n    color: #440;\n  }\n  .tag {\n    color: #006;\n    font-weight: bold;\n  }\n  .atn {\n    color: #404;\n  }\n  .atv {\n    color: #060;\n  }\n}\npre.prettyprint {\n  border-radius: 0;\n  font-family: 'consolas', 'menlo', 'courier', 'monospace', 'Microsoft Yahei' !important;\n  overflow-y: auto;\n}\npre.prettyprint {\n  border-radius: 0;\n  font-family: 'consolas', 'menlo', 'courier', 'monospace', 'Microsoft Yahei' !important;\n  overflow-y: auto;\n}\npre.prettyprint.linenums {\n  border: 1px solid #e2e2e2 !important;\n  padding: 8px 0 6px;\n}\nol.linenums {\n  margin-top: 0;\n  margin-bottom: 0;\n  overflow-y: auto;\n  -webkit-overflow-scrolling: touch;\n  list-style-type: none !important;\n}\nol.linenums li > span {\n  word-break: inherit !important;\n  white-space: nowrap !important;\n  display: block;\n}\nol.linenums li > span > span {\n  word-break: inherit !important;\n  white-space: nowrap !important;\n  display: block;\n}\nol.linenums li code {\n  line-height: 20px !important;\n  margin-left: -20px;\n  font-family: inherit !important;\n  white-space: pre !important;\n  display: flex;\n}\nol.linenums li code span {\n  white-space: inherit !important;\n  font-size: 13px !important;\n  line-height: 20px;\n  font-family: 'consolas', 'menlo', 'courier', 'monospace', 'Microsoft Yahei' !important;\n}\n.code-in-text {\n  color: #585858;\n  background: #f3f1f1;\n}\n.code-in-text span {\n  color: #585858;\n  background: #f3f1f1;\n  display: inline-block;\n  padding: 0 2px;\n  font-size: 14px;\n  font-family: 'consolas', 'menlo', 'courier', 'monospace', 'Microsoft Yahei' !important;\n}\n.prettyprint.code-in-text {\n  background: #f3f1f1;\n  font-family: 'consolas', 'menlo', 'courier', 'monospace', 'Microsoft Yahei' !important;\n}\nli.L0,\nli.L1,\nli.L2,\nli.L3,\nli.L4,\nli.L5,\nli.L6,\nli.L7,\nli.L8,\nli.L9 {\n  list-style-type: none !important;\n}\nli.L1,\nli.L3,\nli.L5,\nli.L7,\nli.L9 {\n  list-style-type: none !important;\n  background: transparent !important;\n}\n.prettyprint {\n  font-family: Consolas, Menlo, Courier, monospace;\n}\n.prettyprint pre p {\n  min-height: 10px;\n}\n#list1 ul {\n  padding-left: 10px;\n}\nul li.task-list-list {\n  list-style-type: none;\n  padding: 0 10px;\n}\nul,\nol {\n  margin: 0;\n  padding: 0;\n  padding-left: 40px;\n}\n.task-list-list {\n  margin: 0;\n  padding: 0;\n}\ntable {\n  display: table;\n  width: 100%;\n}\ntable tr:nth-child(2n) {\n  background-color: #f8f8f8;\n}\n.task-list-list.checked {\n  color: #159957;\n}\n.task-list-list.uncheck {\n  color: #bfc1bf;\n}\n.task-list-list img {\n  height: 20px;\n  width: 20px;\n  margin: 0 10px;\n  top: 4px;\n  position: relative;\n}\nh1.super {\n  white-space: normal;\n  border: none;\n  margin: 5px 0 0;\n  padding: 10px;\n  font-size: 24px;\n  line-height: 20px;\n  border-left-width: 6px;\n  border-left-style: solid;\n  border-radius: 3px;\n  color: #FFFBF0;\n  border-left-color: #30DFF3;\n  background-color: #4B5CC4;\n}\nh2.super {\n  white-space: normal;\n  border: none;\n  margin: 5px 0 0;\n  padding: 10px;\n  font-size: 20px;\n  line-height: 20px;\n  border-left-width: 12px;\n  border-left-style: solid;\n  border-radius: 3px;\n  color: #FFFBF0;\n  border-left-color: #30DFF3;\n  background-color: #4B5CC4;\n}\nh3.super {\n  white-space: normal;\n  border: none;\n  margin: 5px 0 0;\n  padding: 10px;\n  font-size: 18px;\n  line-height: 20px;\n  border-left-width: 18px;\n  border-left-style: solid;\n  border-radius: 3px;\n  color: #FFFBF0;\n  border-left-color: #30DFF3;\n  background-color: #4B5CC4;\n}\nh4.super {\n  white-space: normal;\n  border: none;\n  margin: 5px 0 0;\n  padding: 10px;\n  font-size: 16px;\n  line-height: 20px;\n  border-left-width: 24px;\n  border-left-style: solid;\n  border-radius: 3px;\n  color: #FFFBF0;\n  border-left-color: #30DFF3;\n  background-color: #4B5CC4;\n}\nruby {\n  background-color: rgba(67, 193, 105, 0.5);\n  margin: 4px;\n  padding-right: 2px;\n  padding-left: 2px;\n}\nruby rt {\n  font-style: italic;\n  background-color: rgba(67, 193, 105, 0.2);\n}\n.icon_uncheck,\n.icon_check {\n  display: inline-block;\n  vertical-align: middle;\n  width: 20px;\n  height: 20px;\n  background-repeat: no-repeat;\n  background-size: contain;\n  margin-right: 4px;\n}\n.icon_check {\n  background-image: url(" + __webpack_require__(14) + ");\n}\n.icon_uncheck {\n  background-image: url(" + __webpack_require__(15) + ");\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)();
+// imports
+
+
+// module
+exports.push([module.i, "/*! Color themes for Google Code Prettify | MIT License | github.com/jmblog/color-themes-for-google-code-prettify */\n.prettyprint {\n  background: #1d1f21;\n  font-family: Menlo, \"Bitstream Vera Sans Mono\", \"DejaVu Sans Mono\", Monaco, Consolas, monospace;\n  border: 0 !important;\n}\n\n.pln {\n  color: #c5c8c6;\n}\n\n/* Specify class=linenums on a pre to get line numbering */\nol.linenums {\n  margin-top: 0;\n  margin-bottom: 0;\n  color: #969896;\n}\n\nli.L0,\nli.L1,\nli.L2,\nli.L3,\nli.L4,\nli.L5,\nli.L6,\nli.L7,\nli.L8,\nli.L9 {\n  padding-left: 1em;\n  background-color: #1d1f21;\n  list-style-type: decimal;\n}\n\n@media screen {\n\n  /* string content */\n\n  .str {\n    color: #b5bd68;\n  }\n\n  /* keyword */\n\n  .kwd {\n    color: #b294bb;\n  }\n\n  /* comment */\n\n  .com {\n    color: #969896;\n  }\n\n  /* type name */\n\n  .typ {\n    color: #81a2be;\n  }\n\n  /* literal value */\n\n  .lit {\n    color: #de935f;\n  }\n\n  /* punctuation */\n\n  .pun {\n    color: #c5c8c6;\n  }\n\n  /* lisp open bracket */\n\n  .opn {\n    color: #c5c8c6;\n  }\n\n  /* lisp close bracket */\n\n  .clo {\n    color: #c5c8c6;\n  }\n\n  /* markup tag name */\n\n  .tag {\n    color: #cc6666;\n  }\n\n  /* markup attribute name */\n\n  .atn {\n    color: #de935f;\n  }\n\n  /* markup attribute value */\n\n  .atv {\n    color: #8abeb7;\n  }\n\n  /* declaration */\n\n  .dec {\n    color: #de935f;\n  }\n\n  /* variable name */\n\n  .var {\n    color: #cc6666;\n  }\n\n  /* function name */\n\n  .fun {\n    color: #81a2be;\n  }\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+var stylesInDom = {},
+	memoize = function(fn) {
+		var memo;
+		return function () {
+			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+			return memo;
+		};
+	},
+	isOldIE = memoize(function() {
+		return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+	}),
+	getHeadElement = memoize(function () {
+		return document.head || document.getElementsByTagName("head")[0];
+	}),
+	singletonElement = null,
+	singletonCounter = 0,
+	styleElementsInsertedAtTop = [];
+
+module.exports = function(list, options) {
+	if(typeof DEBUG !== "undefined" && DEBUG) {
+		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the bottom of <head>.
+	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+	var styles = listToStyles(list);
+	addStylesToDom(styles, options);
+
+	return function update(newList) {
+		var mayRemove = [];
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+		if(newList) {
+			var newStyles = listToStyles(newList);
+			addStylesToDom(newStyles, options);
+		}
+		for(var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+			if(domStyle.refs === 0) {
+				for(var j = 0; j < domStyle.parts.length; j++)
+					domStyle.parts[j]();
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+}
+
+function addStylesToDom(styles, options) {
+	for(var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+		if(domStyle) {
+			domStyle.refs++;
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles(list) {
+	var styles = [];
+	var newStyles = {};
+	for(var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+		if(!newStyles[id])
+			styles.push(newStyles[id] = {id: id, parts: [part]});
+		else
+			newStyles[id].parts.push(part);
+	}
+	return styles;
+}
+
+function insertStyleElement(options, styleElement) {
+	var head = getHeadElement();
+	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+	if (options.insertAt === "top") {
+		if(!lastStyleElementInsertedAtTop) {
+			head.insertBefore(styleElement, head.firstChild);
+		} else if(lastStyleElementInsertedAtTop.nextSibling) {
+			head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			head.appendChild(styleElement);
+		}
+		styleElementsInsertedAtTop.push(styleElement);
+	} else if (options.insertAt === "bottom") {
+		head.appendChild(styleElement);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement(styleElement) {
+	styleElement.parentNode.removeChild(styleElement);
+	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+	if(idx >= 0) {
+		styleElementsInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement(options) {
+	var styleElement = document.createElement("style");
+	styleElement.type = "text/css";
+	insertStyleElement(options, styleElement);
+	return styleElement;
+}
+
+function createLinkElement(options) {
+	var linkElement = document.createElement("link");
+	linkElement.rel = "stylesheet";
+	insertStyleElement(options, linkElement);
+	return linkElement;
+}
+
+function addStyle(obj, options) {
+	var styleElement, update, remove;
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+		styleElement = singletonElement || (singletonElement = createStyleElement(options));
+		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+	} else if(obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function") {
+		styleElement = createLinkElement(options);
+		update = updateLink.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+			if(styleElement.href)
+				URL.revokeObjectURL(styleElement.href);
+		};
+	} else {
+		styleElement = createStyleElement(options);
+		update = applyToTag.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle(newObj) {
+		if(newObj) {
+			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+				return;
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag(styleElement, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = styleElement.childNodes;
+		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+		if (childNodes.length) {
+			styleElement.insertBefore(cssNode, childNodes[index]);
+		} else {
+			styleElement.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag(styleElement, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		styleElement.setAttribute("media", media)
+	}
+
+	if(styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = css;
+	} else {
+		while(styleElement.firstChild) {
+			styleElement.removeChild(styleElement.firstChild);
+		}
+		styleElement.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink(linkElement, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	if(sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = linkElement.href;
+
+	linkElement.href = URL.createObjectURL(blob);
+
+	if(oldSrc)
+		URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAABUFBMVEUAAAAVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcVmVcO2ZyiAAAAb3RSTlMAAQIDBQYHCAkKDQ8QERITFBUWFxgZGxwdHiAhIiMoKissLTM4PkBBREpMUFFSVFZZW1xdXl9hYmNvc3V4e35/goOMkZeYmpudnqCio6WmqKq1t7m6vsDBw8zOz9HT19nc3uLk6Onr7e/x8/X5+/2VuNh1AAACKUlEQVRYw+3W61/SUBjA8WcIlpXZRbuhZmVZGJXdtQvaTQuz1LQMs1IMFMbv/3/Xiw04O9vZzvzUO593HM739xkbsIkczj+b47delpdXYmd5/tmNIwZ+/guWMxfpp7Ge3+0jPpfp+gV7v3dKRESc11C92PbP7X3d958B3BHPXwagVuhLPNGZY1nPf/JyfmET4Guv/QVre7+QB9jOpfBL3Y/k5v0rMH4wD/WsrAKtjL3/GDyt12QH2Dqw56oArFn7Rc3/yqQKhPyffkkTcMqar/VLmkC0tw84H3R/UtIETF4PHL37dDDSvzd4LXCpAUym8cFA3gXgTsjrfxn1AYkKDLv++0XNz5u9GhhxOzuK1l4JDLnKnqKtVwI/A7tud/y7WN8N5LR9fsF5G/2/GnEEDW3npJVXAtcJF5w3SV69CvdChbA/LTEBmdILm8k++E2cSrgv+V69rWm/hfs2fo5XxkBcYe+Mt2UWVswBeWDy+76fIT5gKuyf9d9vJQWiCx0vJAbkYZy3CYQLircKyCOztwsEC41BSR2QxyZvG+gWNG8dkCe+H5IDBrxCyIcCu0Al+m52s0llIPLnu6i8XgeajuF+mA2v9QGUlIUSwKhYTwGgoCyMAWxYP2X11gBOKCuZKsCCZSH3LXzSJwDYGHWSeWZ8G4ALwWX/ybFZWUuYrZa3c0br9nwn1ZRDR9azlMa/iPqsE1Vb/uOK4fSMldZ3k/DO6vSwHM5/mL+n5I2BF31JYgAAAABJRU5ErkJggg=="
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAt1BMVEUAAAC/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+/wb+rCW7jAAAAPHRSTlMAAQMECAkKCw4QERweJiorLDg6O0JFRk1QUV5hZmhpa36AhYiOj5udpbC1t7m+x9Ha3uLk6Ovt7/H3+/3V7YVuAAABMElEQVRYw+2Xx1YCMRhGv2Fo0qSDFEWqIL0I4n3/53IR5qC4IXGbu5pZ3DuT/2SRSBGZWncwntzB+LVdTuiGoL7FimXhl59bY8178upXceGQjfwGbnxdCnlcOSQlKTyat1UpHugugnTz4zIHSeqY52fZEL4ZqyDFzgC0ZIkpLKUiAFNbX6FZRUI9ALLWATUBKGsGcLL3lQagrQ3A3CEQAPAqACYOAWOO/xuY+IAP+IAP+IAP+IAP+MCfwFh7t4NqdMwbaAGwcwjEAehqCMCDfaAEQE0VAPr2gRUAmcuf8GjrvwCwlTQC4NOy0DLfrUtKXS5AfYs5ZKfGWQdSdPAHdtPJXcxPkZEzvb7rra0abQnHQuO6picH/Zj/OZXUyFI/d8LbnVkZLvb3yZtZrxiLvG/BQxobYX07aQAAAABJRU5ErkJggg=="
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(10);
+
+var $ = __webpack_require__(1);
+var showdown = __webpack_require__(0);
+var Clipboard = __webpack_require__(3);
+var CodeTheme = __webpack_require__(8);
+var PageTheme = __webpack_require__(9);
+
+__webpack_require__(7);
+__webpack_require__(6);
+__webpack_require__(5);
+
+__webpack_require__(4);
+
+
+var kv = location.href.split('?')[1];
+kv = kv && kv.split('&') || [];
+var params = {};
+$.each(kv, function(index, item) {
+  var m = (item || '').split('=');
+  if (m && m[0] && m[1]) {
+    params[m[0]]= m[1];
+  }
+});
+
+// 方便跨域加载资源
+if (/\.barretlee\.com$/.test(location.hostname)) {
+  document.domain = 'barretlee.com';
+}
+
+
+var converter =  new showdown.Converter({
+  extensions: ['prettify', 'tasklist', 'footnote'],
+  tables: true
+});
+/**
+ * [OnlineMarkdown description]
+ * @type {Object}
+ */
+var OnlineMarkdown = {
+  currentState: 'edit',
+  init: function() {
+    var self = this;
+    self.load().then(function() {
+      self.start()
+    }).fail(function(){
+      self.start();
+    });
+  },
+  start: function() {
+    this.bindEvt();
+    this.updateOutput();
+    new CodeTheme();
+    new PageTheme();
+    new Clipboard('.btn');
+  },
+  load: function() {
+    return $.ajax({
+      type: 'GET',
+      url: params.path || './demo.md',
+      dateType: 'text',
+      data: {
+        _t: new Date() * 1
+      },
+      timeout: 2000
+    }).then(function(data) {
+      $('#input').val(data);
+    });
+  },
+  bindEvt: function() {
+    var self = this;
+    $('#input').on('input keydown paste', self.updateOutput);
+    var $copy = $('.copy-button');
+    var $convert = $('.convert-button');
+    $convert.on('click', function() {
+      var $this = $(this);
+      if (self.currentState === 'preview') {
+        self.currentState = 'edit';
+        $this.text('预览');
+        $copy.hide();
+        $('#input').fadeIn();
+        $('#output').hide();
+      } else {
+        self.currentState = 'preview';
+        $this.text('编辑');
+        $copy.show();
+        $('#input').fadeOut();
+        $('#output').show();
+      }
+    });
+    if (params.preview) {
+      $convert.trigger('click');
+    }
+  },
+
+  updateOutput: function () {
+    var val = converter.makeHtml($('#input').val());
+    $('#output .wrapper').html(val);
+    PR.prettyPrint();
+    $('#outputCtt li').each(function() {
+      $(this).html('<span><span>' + $(this).html() + '</span></span>');
+    });
+  }
+};
+
+OnlineMarkdown.init();
+
+
+/***/ })
+/******/ ]);

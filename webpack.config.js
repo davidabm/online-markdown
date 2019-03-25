@@ -8,11 +8,11 @@ module.exports = {
     // plugins: [commonsPlugin],
     //页面入口文件配置
     entry: {
-        index : './src/js/index.js'
+        index : 'js/index.js'
     },
     //入口文件输出配置
     output: {
-        path: 'docs/js/',
+        path: 'js',
         filename: '[name].js'
     },
     module: {
@@ -27,45 +27,45 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             { 
-                context: path.join(__dirname, './src/css/pageThemes'),
+                context: path.join(__dirname, 'css/pageThemes'),
                 from: '*', 
-                to: '../pageThemes',
+                to: 'pageThemes',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src/imgs'),
+                context: path.join(__dirname, 'imgs'),
                 from: '*', 
-                to: '../imgs',
+                to: 'imgs',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src/css/themes'),
+                context: path.join(__dirname, 'css/themes'),
                 from: '*', 
-                to: '../themes',
+                to: 'themes',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src'),
+                context: path.join(__dirname, './'),
                 from: "index.html",
-                to: '../index.html',
+                to: 'index.html',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src'),
+                context: path.join(__dirname, './'),
                 from: "demo.md",
-                to: '../demo.md',
+                to: 'demo.md',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src'),
+                context: path.join(__dirname, './'),
                 from: "favicon.ico",
-                to: '../favicon.ico',
+                to: 'favicon.ico',
                 force: true
             },
             { 
-                context: path.join(__dirname, './src'),
+                context: path.join(__dirname, './'),
                 from: "CNAME",
-                to: '../CNAME',
+                to: 'CNAME',
                 toType: 'file',
                 force: true
             }
